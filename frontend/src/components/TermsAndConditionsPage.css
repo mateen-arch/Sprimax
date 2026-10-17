@@ -1,0 +1,293 @@
+/* ==========================================================================
+   TERMS AND CONDITIONS PAGE STYLES
+   Exact reproduction of reference design:
+   - Header breadcrumb bar with < Back Terms and Conditions
+   - Sticky left sidebar "Document Contents" with numbered sections (01 to 08)
+   - Right white card with header, metadata TC-2024-SPX, and numbered sections
+   - Mono callout boxes and alert labels
+   ========================================================================== */
+
+.terms-page-wrapper {
+  min-height: 80vh;
+  background-color: #f8fafc;
+  padding-bottom: 5rem;
+  color: #1e293b;
+  font-family: var(--font-body, "Inter", sans-serif);
+}
+
+.terms-top-bar {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.85rem 0;
+  margin-bottom: 2.25rem;
+}
+
+.terms-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.terms-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.terms-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  color: #475569;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.terms-back-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.terms-breadcrumb-title {
+  color: #0f172a;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* 2-Column Grid Layout */
+.terms-content-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* Left Table of Contents */
+.terms-toc-card {
+  position: sticky;
+  top: 90px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1.5rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.terms-toc-title {
+  margin: 0 0 0.85rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+}
+
+.terms-toc-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin-bottom: 1.1rem;
+}
+
+.terms-toc-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.terms-toc-link {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  color: #475569;
+  font-size: 13.5px;
+  font-family: var(--font-body, "Inter", monospace);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.terms-toc-link:hover {
+  color: #0f172a;
+  background-color: #f8fafc;
+}
+
+.terms-toc-link.active {
+  color: #0f172a;
+  font-weight: 700;
+  background-color: #f1f5f9;
+}
+
+/* Right Document Card */
+.terms-document-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 3rem 3.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 2.75rem;
+}
+
+.terms-header-block {
+  margin-bottom: 0.5rem;
+}
+
+.terms-main-title {
+  margin: 0 0 0.75rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.terms-meta-text {
+  color: #64748b;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13px;
+  margin-bottom: 1.5rem;
+}
+
+.terms-title-divider {
+  height: 1.5px;
+  background-color: #64748b;
+  width: 100%;
+}
+
+.terms-section-heading {
+  margin: 0 0 0.75rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.terms-num {
+  color: #851e18;
+  font-family: var(--font-body, "Inter", monospace);
+  margin-right: 0.35rem;
+}
+
+.terms-section-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin-bottom: 1.25rem;
+}
+
+.terms-section-body {
+  color: #334155;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.terms-section-body p {
+  margin: 0 0 1rem;
+}
+
+.terms-section-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Monospace Indented Box */
+.terms-mono-box {
+  background-color: #f8fafc;
+  border-left: 3px solid #cbd5e1;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0 0 1.5rem;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13px;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.terms-mono-box p {
+  margin: 0;
+}
+
+/* Callout Box with Brown Border (Pricing & Availability) */
+.terms-highlight-callout {
+  background-color: #f1f5f9;
+  border-left: 4px solid #7c2d12;
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.terms-callout-title {
+  margin: 0 0 0.5rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+}
+
+.terms-callout-text {
+  margin: 0;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+/* Danger / Professional Use Disclaimer */
+.terms-danger-label {
+  color: #ef4444;
+  font-family: var(--font-body, "Inter", sans-serif);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+/* Contact Card */
+.terms-contact-card {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1.5rem 1.75rem;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13px;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.terms-contact-card p {
+  margin: 0;
+}
+
+.terms-contact-card strong {
+  color: #0f172a;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .terms-content-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .terms-toc-card {
+    position: static;
+  }
+
+  .terms-document-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .terms-mono-box {
+    margin-left: 0.25rem;
+  }
+}

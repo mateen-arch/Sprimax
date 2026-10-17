@@ -1,0 +1,676 @@
+/* ==========================================================================
+   ISO CERTIFICATIONS & QUALITY ASSURANCE PAGE STYLES
+   Exact reproduction of reference design:
+   - Hero banner with red badge "QUALITY ASSURANCE" & tolerance box (0.001mm)
+   - Red accent vertical bar for section titles
+   - Global Standards & 4-Stage QC cards
+   - Certificate Registry grid with STATUS: ACTIVE / EXPIRED badges & search
+   - In-House Testing Facilities with dual photo cards (Chemical & Mechanical)
+   ========================================================================== */
+
+.iso-page-wrapper {
+  min-height: 85vh;
+  background-color: #f8fafc;
+  padding-bottom: 5rem;
+  color: #1e293b;
+  font-family: var(--font-body, "Inter", sans-serif);
+}
+
+.iso-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* 1. HERO SECTION */
+.iso-hero-section {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 3.5rem 0 4rem;
+}
+
+.iso-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.iso-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: #fee2e2;
+  color: #ef4444;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+
+.iso-badge-icon {
+  color: #ef4444;
+}
+
+.iso-hero-headline {
+  margin: 0 0 1.25rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+.iso-hero-description {
+  margin: 0 0 2rem;
+  color: #475569;
+  font-size: 15.5px;
+  line-height: 1.65;
+  max-width: 520px;
+}
+
+.iso-view-certs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.iso-view-certs-btn:hover {
+  color: #ff0804;
+}
+
+/* Hero Image & 0.001mm Tolerance Card */
+.iso-hero-image-col {
+  position: relative;
+}
+
+.iso-hero-img-wrapper {
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.iso-hero-img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  display: block;
+}
+
+.iso-tolerance-card {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  background-color: #ffffff;
+  padding: 1rem 1.4rem;
+  border-radius: 4px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iso-tolerance-icon {
+  color: #395f94;
+}
+
+.iso-tolerance-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.iso-tolerance-value {
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.iso-tolerance-label {
+  color: #64748b;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* 2. GLOBAL STANDARDS & 4-STAGE QC */
+.iso-qc-section {
+  padding: 4rem 0 3rem;
+}
+
+.iso-section-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.iso-accent-bar {
+  width: 4px;
+  height: 28px;
+  background-color: #ff0804;
+  border-radius: 2px;
+}
+
+.iso-section-title {
+  margin: 0;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.iso-qc-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+}
+
+.iso-standards-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.iso-standard-box {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.iso-standard-name {
+  margin: 0 0 0.5rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.iso-standard-sub {
+  margin: 0;
+  color: #64748b;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.iso-standard-icon {
+  color: #395f94;
+  flex-shrink: 0;
+}
+
+/* 4-Stage QC Grid Card */
+.iso-stages-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 2.25rem 2.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.iso-stages-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.25rem 3rem;
+}
+
+.iso-stage-indicator {
+  color: #64748b;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.iso-stage-title {
+  margin: 0 0 0.5rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.iso-stage-desc {
+  margin: 0;
+  color: #475569;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* 3. CERTIFICATE REGISTRY SECTION */
+.iso-registry-section {
+  padding: 3rem 0 4rem;
+}
+
+.iso-registry-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.iso-registry-title {
+  margin: 0 0 0.5rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.iso-registry-subtitle {
+  margin: 0;
+  color: #64748b;
+  font-size: 14.5px;
+}
+
+.iso-registry-search {
+  position: relative;
+  width: 280px;
+}
+
+.iso-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.iso-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 1rem 0 2.25rem;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 12.5px;
+  color: #1e293b;
+}
+
+.iso-search-input:focus {
+  outline: none;
+  border-color: #212e68;
+}
+
+/* Registry Cards Grid */
+.iso-registry-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.iso-cert-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1.75rem 1.85rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.iso-cert-status-row {
+  margin-bottom: 1rem;
+}
+
+.iso-cert-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.iso-cert-tag--active {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.iso-cert-tag--expired {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.iso-cert-title {
+  margin: 0 0 0.35rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.iso-cert-issuer {
+  color: #64748b;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 12.5px;
+  margin-bottom: 1.25rem;
+}
+
+.iso-cert-divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin-bottom: 1.25rem;
+}
+
+.iso-cert-dates-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.iso-cert-date-label {
+  display: block;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.25rem;
+}
+
+.iso-cert-date-val {
+  display: block;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.iso-cert-date-val--expired {
+  color: #ef4444;
+}
+
+.iso-cert-actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.iso-cert-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.12s ease;
+}
+
+.iso-cert-action-btn:hover {
+  color: #ff0804;
+}
+
+.iso-cert-archive-label {
+  font-size: 12.5px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* 4. IN-HOUSE TESTING FACILITIES */
+.iso-facilities-section {
+  padding: 1rem 0 3rem;
+}
+
+.iso-facilities-subtitle {
+  margin: -1rem 0 2rem;
+  color: #475569;
+  font-size: 15px;
+  max-width: 680px;
+  line-height: 1.6;
+}
+
+.iso-facilities-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.iso-facility-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.iso-facility-img-wrap {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+}
+
+.iso-facility-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.iso-facility-content {
+  padding: 1.75rem 2rem;
+}
+
+.iso-facility-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.iso-facility-icon {
+  color: #395f94;
+}
+
+.iso-facility-title {
+  margin: 0;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.iso-facility-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.iso-facility-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.iso-bullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ff0804;
+  flex-shrink: 0;
+}
+
+/* Modal */
+.iso-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.iso-modal-card {
+  background: #ffffff;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.iso-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.iso-modal-title-cluster {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.iso-modal-icon {
+  color: #ff0804;
+}
+
+.iso-modal-title {
+  margin: 0;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.iso-modal-close {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.iso-modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.iso-modal-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.6rem;
+  font-size: 13.5px;
+}
+
+.iso-modal-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.iso-modal-val {
+  color: #0f172a;
+  font-weight: 600;
+  text-align: right;
+}
+
+.iso-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+}
+
+.iso-modal-btn-cancel {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.iso-modal-btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ff0804;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.55rem 1.25rem;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .iso-hero-grid,
+  .iso-qc-grid,
+  .iso-facilities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .iso-stages-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .iso-registry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .iso-registry-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .iso-registry-search {
+    width: 100%;
+  }
+}

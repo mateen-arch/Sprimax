@@ -1,0 +1,127 @@
+/* ==========================================================================
+   SPRIMAX BRAND DESIGN TOKENS
+   Strict adherence to brand guide:
+   - Deep Navy: #212E68
+   - Safety Orange: #FF0804
+   - Steel Blue: #395F94
+   - Machine Grey: #F7FAFC
+   ========================================================================== */
+
+:root {
+  /* Brand Colors */
+  --deep-navy: #212E68;
+  --safety-orange: #FF0804;
+  --steel-blue: #395F94;
+  --machine-grey: #F7FAFC;
+  --white: #FFFFFF;
+
+  /* Derivative Color Utilities */
+  --border-light: rgba(57, 95, 148, 0.22);
+  --border-medium: #395F94;
+  --border-navy: #212E68;
+  --steel-blue-tint: rgba(57, 95, 148, 0.08);
+  --safety-orange-tint: rgba(255, 8, 4, 0.08);
+
+  /* Font Families */
+  --font-headline: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-tabular: 'JetBrains Mono', monospace;
+
+  /* Sizing and radii */
+  --radius-sharp: 0px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 3px rgba(33, 46, 104, 0.08);
+  --shadow-card: 0 4px 16px rgba(33, 46, 104, 0.08);
+  --shadow-elevated: 0 10px 30px rgba(33, 46, 104, 0.12);
+}
+
+/* Reset & Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  background-color: var(--machine-grey);
+  color: var(--deep-navy);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   STRICT TYPOGRAPHIC SCALE
+   ========================================================================== */
+
+.headline-xl {
+  font-family: var(--font-headline);
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--deep-navy);
+}
+
+.headline-lg {
+  font-family: var(--font-headline);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--deep-navy);
+}
+
+.headline-md {
+  font-family: var(--font-headline);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--deep-navy);
+}
+
+.body-lg {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--deep-navy);
+}
+
+.body-md {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--deep-navy);
+}
+
+.data-tabular {
+  font-family: var(--font-tabular);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+
+/* Form Controls */
+input, button, select, textarea {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

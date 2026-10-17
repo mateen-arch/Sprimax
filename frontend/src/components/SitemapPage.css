@@ -1,0 +1,147 @@
+/* ==========================================================================
+   SITEMAP PAGE STYLES
+   Exact reproduction of reference design:
+   - Header with "Sitemap" title and subtitle + light full-width divider
+   - 6-Card Grid (Products, Industries, Resources, Company, Contact & Support, Legal)
+   - Clean white cards with subtle borders and chevrons
+   ========================================================================== */
+
+.sitemap-page-wrapper {
+  min-height: 85vh;
+  background-color: #f8fafc;
+  padding: 3rem 0 5rem;
+  color: #1e293b;
+  font-family: var(--font-body, "Inter", sans-serif);
+}
+
+.sitemap-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Header */
+.sitemap-header-block {
+  margin-bottom: 2.5rem;
+}
+
+.sitemap-main-title {
+  margin: 0 0 0.75rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 2.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sitemap-subtitle {
+  margin: 0 0 1.75rem;
+  color: #475569;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.sitemap-header-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  width: 100%;
+}
+
+/* 6-Card Grid (3 columns desktop, 2 columns tablet, 1 column mobile) */
+.sitemap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.sitemap-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sitemap-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.sitemap-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.sitemap-card-icon {
+  color: #395f94;
+}
+
+.sitemap-card-title {
+  margin: 0;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.sitemap-card-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin-bottom: 1.1rem;
+}
+
+/* Links List */
+.sitemap-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sitemap-link-item {
+  display: flex;
+  align-items: center;
+}
+
+.sitemap-anchor-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #334155;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all 0.12s ease;
+}
+
+.sitemap-chevron {
+  color: #64748b;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.sitemap-anchor-link:hover {
+  color: #ff0804;
+  transform: translateX(3px);
+}
+
+.sitemap-anchor-link:hover .sitemap-chevron {
+  color: #ff0804;
+}
+
+/* Responsive */
+@media (max-width: 990px) {
+  .sitemap-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sitemap-grid {
+    grid-template-columns: 1fr;
+  }
+}

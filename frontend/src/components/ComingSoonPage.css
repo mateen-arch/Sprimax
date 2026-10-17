@@ -1,0 +1,165 @@
+/* ==========================================================================
+   COMING SOON PAGE STYLES (Careers & Blog)
+   Modern, elegant glassmorphic card with Sprimax brand colors
+   ========================================================================== */
+
+.coming-soon-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.5rem 6rem;
+  background-color: #f8fafc;
+  font-family: var(--font-body, "Inter", sans-serif);
+}
+
+.coming-soon-container {
+  max-width: 800px;
+  width: 100%;
+}
+
+.coming-soon-top-bar {
+  margin-bottom: 1.5rem;
+}
+
+.coming-soon-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.coming-soon-back-btn:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.coming-soon-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4.5rem 3.5rem;
+  text-align: center;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #fee2e2;
+  color: #ef4444;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-family: var(--font-body, "Inter", monospace);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 1.75rem;
+}
+
+.coming-soon-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.coming-soon-title {
+  margin: 0 0 1.25rem;
+  color: #0f172a;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.coming-soon-highlight {
+  color: #ff0804;
+}
+
+.coming-soon-description {
+  margin: 0 0 2.5rem;
+  color: #475569;
+  font-size: 16px;
+  line-height: 1.65;
+  max-width: 580px;
+}
+
+.coming-soon-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.coming-soon-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background-color: #ff0804;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.85rem 1.75rem;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.coming-soon-btn-primary:hover {
+  background-color: #e00602;
+}
+
+.coming-soon-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 0.85rem 1.75rem;
+  font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.coming-soon-btn-secondary:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+@media (max-width: 600px) {
+  .coming-soon-card {
+    padding: 3rem 1.5rem;
+  }
+  .coming-soon-title {
+    font-size: 2.25rem;
+  }
+}
