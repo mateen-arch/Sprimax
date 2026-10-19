@@ -12,6 +12,7 @@ import {
   X,
   Loader2,
   AlertCircle,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { getDownloads, trackDownload } from '../api/resources.js';
 
@@ -55,6 +56,41 @@ export default function ResourcesPage({ initialSearch = '', onClearInitialSearch
   const [selectedTypes, setSelectedTypes] = useState(['all']);
   const [currentPage, setCurrentPage] = useState(1);
   const [downloadToast, setDownloadToast] = useState(null);
+
+  // Mobile drawer filter sidebar state
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
+  // Prevent background scrolling when mobile filter drawer is open
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileFilterOpen]);
+
+  // Handle escape key and auto-close when resizing to desktop
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isMobileFilterOpen) {
+        setIsMobileFilterOpen(false);
+      }
+    };
+    const handleResize = () => {
+      if (window.innerWidth > 960 && isMobileFilterOpen) {
+        setIsMobileFilterOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobileFilterOpen]);
 
   // Load real resources from MongoDB Atlas
   const loadResources = useCallback(async () => {
@@ -266,6 +302,8 @@ export default function ResourcesPage({ initialSearch = '', onClearInitialSearch
     currentPage * itemsPerPage
   );
 
+  const activeFiltersCount = selectedTypes.includes('all') ? 0 : selectedTypes.length;
+
   return (
     <div className="resources-page-wrapper">
       <div className="resources-container">
@@ -312,32 +350,102 @@ export default function ResourcesPage({ initialSearch = '', onClearInitialSearch
           </form>
         </header>
 
+        {/* Mobile Controls Row: Filter Trigger Button + Documents Found Count */}
+        <div className="resources-mobile-controls-row">
+          <button 
+            type="button" 
+            className="resources-mobile-filter-btn data-tabular"
+            onClick={() => setIsMobileFilterOpen(true)}
+            aria-label="Open filter sidebar"
+          >
+            <SlidersHorizontal size={15} />
+            <span>Filters</span>
+            {activeFiltersCount > 0 && (
+              <span className="resources-filter-badge">{activeFiltersCount}</span>
+            )}
+          </button>
+
+          <div className="resources-found-box">
+            <span className="resources-found-number">{filteredResources.length}</span>
+            <span className="resources-found-label data-tabular">DOCUMENTS FOUND</span>
+          </div>
+        </div>
+
+        {/* Mobile Filter Drawer Backdrop Overlay */}
+        <div 
+          className={`resources-sidebar-backdrop ${isMobileFilterOpen ? 'active' : ''}`}
+          onClick={() => setIsMobileFilterOpen(false)}
+          aria-hidden={!isMobileFilterOpen}
+        />
+
         {/* Main 2-Column Layout */}
         <div className="resources-main-layout">
-          {/* Left Sidebar Filter */}
-          <aside className="resources-sidebar">
-            <div className="resources-filter-box">
-              <h2 className="resources-filter-title">RESOURCE TYPE</h2>
-              <div className="resources-filter-divider" />
-              <div className="resources-checkbox-list">
-                {resourceTypes.map((type) => {
-                  const isChecked = selectedTypes.includes(type.id);
-                  return (
-                    <label key={type.id} className="resources-checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => handleTypeToggle(type.id)}
-                        style={{ display: 'none' }}
-                      />
-                      <span className={`resources-custom-checkbox ${isChecked ? 'checked' : ''}`}>
-                        {isChecked && <Check size={11} strokeWidth={3} className="resources-check-icon" />}
-                      </span>
-                      <span className="resources-checkbox-text">{type.label}</span>
-                    </label>
-                  );
-                })}
+          {/* Left Sidebar Filter (Off-canvas Drawer on mobile screens) */}
+          <aside className={`resources-sidebar ${isMobileFilterOpen ? 'mobile-open' : ''}`} aria-label="Resource Filters">
+            {/* Mobile Drawer Header */}
+            <div className="resources-sidebar-mobile-header">
+              <div className="mobile-header-title-wrap">
+                <SlidersHorizontal size={17} className="mobile-header-icon" />
+                <span className="mobile-header-title data-tabular">FILTERS</span>
+                {activeFiltersCount > 0 && (
+                  <span className="mobile-header-badge data-tabular">{activeFiltersCount}</span>
+                )}
               </div>
+              <button 
+                type="button" 
+                className="mobile-sidebar-close-btn"
+                onClick={() => setIsMobileFilterOpen(false)}
+                aria-label="Close filters"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable Filter Area */}
+            <div className="resources-sidebar-scroll-area">
+              <div className="resources-filter-box">
+                <h2 className="resources-filter-title">RESOURCE TYPE</h2>
+                <div className="resources-filter-divider" />
+                <div className="resources-checkbox-list">
+                  {resourceTypes.map((type) => {
+                    const isChecked = selectedTypes.includes(type.id);
+                    return (
+                      <label key={type.id} className="resources-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleTypeToggle(type.id)}
+                          style={{ display: 'none' }}
+                        />
+                        <span className={`resources-custom-checkbox ${isChecked ? 'checked' : ''}`}>
+                          {isChecked && <Check size={11} strokeWidth={3} className="resources-check-icon" />}
+                        </span>
+                        <span className="resources-checkbox-text">{type.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Drawer Footer with Action Buttons */}
+            <div className="resources-sidebar-mobile-footer">
+              {activeFiltersCount > 0 && (
+                <button 
+                  type="button" 
+                  className="mobile-sidebar-clear-btn data-tabular"
+                  onClick={() => setSelectedTypes(['all'])}
+                >
+                  Reset
+                </button>
+              )}
+              <button 
+                type="button" 
+                className="mobile-sidebar-apply-btn data-tabular"
+                onClick={() => setIsMobileFilterOpen(false)}
+              >
+                Show {filteredResources.length} Document{filteredResources.length === 1 ? '' : 's'}
+              </button>
             </div>
           </aside>
 

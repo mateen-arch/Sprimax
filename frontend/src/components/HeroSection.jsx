@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
-import heroBg from '../assets/hero-bg.jpg';
+import heroBg from '../assets/hero-bg.png';
 import { getHeroBanner, getDiscoveryFilters } from '../api/home.js';
 
 export default function HeroSection({ onExploreProducts, onSendEnquiry, onSearchCatalog }) {

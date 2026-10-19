@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema(
     },
     awsClass: {
       type: String,
-      required: true,
+      default: 'N/A',
       trim: true,
       index: true,
     },
@@ -27,7 +27,11 @@ const productSchema = new mongoose.Schema(
     },
     categorySlug: {
       type: String,
-      required: true,
+      default: function () {
+        return this.category
+          ? this.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+          : 'general';
+      },
       trim: true,
       index: true,
     },
@@ -38,7 +42,7 @@ const productSchema = new mongoose.Schema(
     },
     baseMaterial: {
       type: String,
-      required: true,
+      default: 'Carbon Steel',
       trim: true,
       index: true,
     },

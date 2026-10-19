@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, Bell, Menu, Search, Settings } from 'lucide-react';
 
 export default function AdminTopbar({
@@ -11,6 +11,28 @@ export default function AdminTopbar({
 }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [profile, setProfile] = useState(() => {
+    try {
+      const raw = localStorage.getItem('sprimax_admin_profile');
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { name: 'Mateen Baig', displayName: 'Mateen', avatar: '' };
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        const raw = localStorage.getItem('sprimax_admin_profile');
+        if (raw) setProfile(JSON.parse(raw));
+      } catch (e) {}
+    };
+    window.addEventListener('adminProfileUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('adminProfileUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
 
   return (
     <header className="admin-topbar">
@@ -84,18 +106,21 @@ export default function AdminTopbar({
         <button
           aria-label="Admin profile"
           className="profile-avatar"
-          onClick={() => onToast?.('Admin profile settings opened.')}
+          onClick={() => onNavigate?.('Admin Profile')}
           type="button"
+          title="Admin Profile"
         >
-          <img
-            src="/avatar-admin.jpg"
-            alt="Admin Avatar"
-            className="profile-avatar-img"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-          <span className="profile-avatar-fallback">AD</span>
+          {profile?.avatar ? (
+            <img
+              src={profile.avatar}
+              alt={profile.displayName || 'Admin'}
+              className="profile-avatar-img"
+            />
+          ) : (
+            <span className="profile-avatar-fallback">
+              {(profile?.displayName || profile?.name || 'AD').slice(0, 2).toUpperCase()}
+            </span>
+          )}
         </button>
       </div>
     </header>

@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 
 // @desc    Get all products with filtering, searching, sorting & pagination
 // @route   GET /api/products
@@ -192,7 +193,8 @@ export const createProduct = async (req, res, next) => {
       });
     }
 
-    const existingProduct = await Product.findOne({ sku: sku.trim().toUpperCase() });
+    const cleanSku = sku.trim().toUpperCase();
+    const existingProduct = await Product.findOne({ sku: cleanSku });
     if (existingProduct) {
       return res.status(400).json({
         success: false,
@@ -200,7 +202,34 @@ export const createProduct = async (req, res, next) => {
       });
     }
 
-    const newProduct = new Product(req.body);
+    const productPayload = { ...req.body };
+    productPayload.sku = cleanSku;
+    productPayload.name = name.trim();
+
+    // Auto-resolve or derive categorySlug
+    if (!productPayload.categorySlug && productPayload.category) {
+      const foundCategory = await Category.findOne({ name: productPayload.category.trim() });
+      productPayload.categorySlug =
+        foundCategory?.slug ||
+        productPayload.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    // Default baseMaterial if not supplied
+    if (!productPayload.baseMaterial) {
+      productPayload.baseMaterial = 'Carbon Steel';
+    }
+
+    // Default awsClass if not supplied
+    if (!productPayload.awsClass) {
+      productPayload.awsClass = 'N/A';
+    }
+
+    // Ensure industries is an array
+    if (!productPayload.industries) {
+      productPayload.industries = [];
+    }
+
+    const newProduct = new Product(productPayload);
     const savedProduct = await newProduct.save();
 
     res.status(201).json({

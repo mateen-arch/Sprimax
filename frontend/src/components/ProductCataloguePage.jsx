@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, ChevronUp, ChevronDown, Check, ArrowLeft, ArrowRight, X } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, Check, ArrowLeft, ArrowRight, X, SlidersHorizontal } from 'lucide-react';
 import noImagePlaceholder from '../assets/no-image-placeholder.png';
 import weldionBanner from '../assets/weldion-product-banner.png';
 import { getProducts, getCategories } from '../api/products.js';
@@ -19,6 +19,9 @@ export default function ProductCataloguePage({
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const pageSize = 4;
 
+  // Mobile drawer filter sidebar state
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+
   // Accordion open/close states
   const [accordionsOpen, setAccordionsOpen] = useState({
     category: true,
@@ -30,6 +33,38 @@ export default function ProductCataloguePage({
   const toggleAccordion = (key) => {
     setAccordionsOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  // Prevent background scrolling when mobile filter drawer is open
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileFilterOpen]);
+
+  // Handle escape key and auto-close when resizing to desktop
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isMobileFilterOpen) {
+        setIsMobileFilterOpen(false);
+      }
+    };
+    const handleResize = () => {
+      if (window.innerWidth > 900 && isMobileFilterOpen) {
+        setIsMobileFilterOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobileFilterOpen]);
 
   // Products and Categories list from database
   const [productsList, setProductsList] = useState([]);
@@ -335,6 +370,8 @@ export default function ProductCataloguePage({
     return chips;
   }, [selectedCategories, selectedAws, selectedMaterials, selectedIndustries, searchFilter]);
 
+  const totalActiveFiltersCount = selectedCategories.length + selectedAws.length + selectedMaterials.length + selectedIndustries.length;
+
   return (
     <div className="catalogue-page-wrapper">
       <div className="catalogue-page-container">
@@ -371,10 +408,26 @@ export default function ProductCataloguePage({
               <Search size={15} className="catalogue-search-icon" />
             </div>
 
-            {/* Found Counter: Real-time count of matching products */}
-            <div className="catalogue-found-box">
-              <span className="catalogue-found-number">{displayedProducts.length}</span>
-              <span className="catalogue-found-label data-tabular">PRODUCTS FOUND</span>
+            {/* Mobile Controls Row: Filter Trigger Button + Products Found Count */}
+            <div className="catalogue-mobile-controls-row">
+              <button 
+                type="button" 
+                className="catalogue-mobile-filter-btn data-tabular"
+                onClick={() => setIsMobileFilterOpen(true)}
+                aria-label="Open filter sidebar"
+              >
+                <SlidersHorizontal size={15} />
+                <span>Filters</span>
+                {totalActiveFiltersCount > 0 && (
+                  <span className="mobile-filter-badge">{totalActiveFiltersCount}</span>
+                )}
+              </button>
+
+              {/* Found Counter: Real-time count of matching products */}
+              <div className="catalogue-found-box">
+                <span className="catalogue-found-number">{displayedProducts.length}</span>
+                <span className="catalogue-found-label data-tabular">PRODUCTS FOUND</span>
+              </div>
             </div>
           </div>
         </div>
@@ -411,18 +464,46 @@ export default function ProductCataloguePage({
           </div>
         )}
 
+        {/* Mobile Filter Drawer Backdrop Overlay */}
+        <div 
+          className={`catalogue-sidebar-backdrop ${isMobileFilterOpen ? 'active' : ''}`}
+          onClick={() => setIsMobileFilterOpen(false)}
+          aria-hidden={!isMobileFilterOpen}
+        />
+
         {/* Main Content Layout: Left Sidebar + Products Grid */}
         <div className="catalogue-content-layout">
-          {/* Left Sidebar: Accordion Filter Panels */}
-          <aside className="catalogue-sidebar">
-            {/* Accordion 1: CATEGORY (Real categories from Database) */}
-            <div className="filter-accordion-card">
+          {/* Left Sidebar: Accordion Filter Panels (Off-canvas Drawer on mobile screens) */}
+          <aside className={`catalogue-sidebar ${isMobileFilterOpen ? 'mobile-open' : ''}`} aria-label="Product Filters">
+            {/* Mobile Drawer Header */}
+            <div className="catalogue-sidebar-mobile-header">
+              <div className="mobile-header-title-wrap">
+                <SlidersHorizontal size={17} className="mobile-header-icon" />
+                <span className="mobile-header-title data-tabular">FILTERS</span>
+                {totalActiveFiltersCount > 0 && (
+                  <span className="mobile-header-badge data-tabular">{totalActiveFiltersCount}</span>
+                )}
+              </div>
               <button 
                 type="button" 
-                className="filter-accordion-header"
-                onClick={() => toggleAccordion('category')}
-                aria-expanded={accordionsOpen.category}
+                className="mobile-sidebar-close-btn"
+                onClick={() => setIsMobileFilterOpen(false)}
+                aria-label="Close filters"
               >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable Accordion Area */}
+            <div className="catalogue-sidebar-scroll-area">
+              {/* Accordion 1: CATEGORY (Real categories from Database) */}
+              <div className="filter-accordion-card">
+                <button 
+                  type="button" 
+                  className="filter-accordion-header"
+                  onClick={() => toggleAccordion('category')}
+                  aria-expanded={accordionsOpen.category}
+                >
                 <span className="accordion-title data-tabular">CATEGORY</span>
                 {accordionsOpen.category ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
@@ -568,6 +649,27 @@ export default function ProductCataloguePage({
                 )}
               </div>
             )}
+            </div>
+
+            {/* Mobile Drawer Footer with Action Buttons */}
+            <div className="catalogue-sidebar-mobile-footer">
+              {totalActiveFiltersCount > 0 && (
+                <button 
+                  type="button" 
+                  className="mobile-sidebar-clear-btn data-tabular"
+                  onClick={handleClearAllFilters}
+                >
+                  Clear All
+                </button>
+              )}
+              <button 
+                type="button" 
+                className="mobile-sidebar-apply-btn data-tabular"
+                onClick={() => setIsMobileFilterOpen(false)}
+              >
+                Show {displayedProducts.length} Product{displayedProducts.length === 1 ? '' : 's'}
+              </button>
+            </div>
           </aside>
 
           {/* Right Area: Products Grid + Pagination */}

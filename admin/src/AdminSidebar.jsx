@@ -224,7 +224,7 @@ export default function AdminSidebar({
 
         <div className="sidebar-footer">
           <button
-            className="sidebar-link sidebar-link--footer"
+            className={`sidebar-link sidebar-link--footer${currentNav === 'Admin Profile' ? ' sidebar-link--active' : ''}`}
             onClick={() => handleNavClick('Admin Profile')}
             type="button"
           >
@@ -232,7 +232,7 @@ export default function AdminSidebar({
             <span>Admin Profile</span>
           </button>
           <button
-            className="sidebar-link sidebar-link--footer"
+            className={`sidebar-link sidebar-link--footer${currentNav === 'Help/Support' ? ' sidebar-link--active' : ''}`}
             onClick={() => handleNavClick('Help/Support')}
             type="button"
           >

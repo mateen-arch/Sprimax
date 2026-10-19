@@ -68,6 +68,28 @@ function DashboardPage({ onLogout, onNavigate }) {
   const [searchText, setSearchText] = useState('');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profile, setProfile] = useState(() => {
+    try {
+      const raw = localStorage.getItem('sprimax_admin_profile');
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return { name: 'Mateen Baig', displayName: 'Mateen', avatar: '' };
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      try {
+        const raw = localStorage.getItem('sprimax_admin_profile');
+        if (raw) setProfile(JSON.parse(raw));
+      } catch (e) {}
+    };
+    window.addEventListener('adminProfileUpdated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('adminProfileUpdated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
   const [toast, setToast] = useState('');
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
 
@@ -363,10 +385,19 @@ function DashboardPage({ onLogout, onNavigate }) {
             <button
               aria-label="Admin profile"
               className="profile-avatar"
-              onClick={() => showToast('Admin Profile: baigmateen80')}
+              onClick={() => onNavigate?.('Admin Profile')}
               type="button"
+              title="Admin Profile"
             >
-              AD
+              {profile?.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt={profile.displayName || 'Admin'}
+                  style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                />
+              ) : (
+                (profile?.displayName || profile?.name || 'AD').slice(0, 2).toUpperCase()
+              )}
             </button>
           </div>
         </header>
@@ -374,7 +405,7 @@ function DashboardPage({ onLogout, onNavigate }) {
         <main className="dashboard-content">
           <div className="dashboard-heading-row">
             <div>
-              <h2 className="dashboard-greeting">Good morning, Admin</h2>
+              <h2 className="dashboard-greeting">Good morning, {profile?.displayName || 'Admin'}</h2>
               <p className="dashboard-date">{todayLabel()}</p>
             </div>
             <button

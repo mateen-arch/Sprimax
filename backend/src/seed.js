@@ -74,7 +74,7 @@ const initialCategories = [
     cardTheme: 'white',
     watermarkType: 'default',
     sortOrder: 5,
-    isFeaturedOnHome: true,
+    isFeaturedOnHome: false,
     isWideCard: false,
   },
   {
@@ -84,7 +84,7 @@ const initialCategories = [
     cardTheme: 'white',
     watermarkType: 'default',
     sortOrder: 6,
-    isFeaturedOnHome: true,
+    isFeaturedOnHome: false,
     isWideCard: false,
   },
 ];

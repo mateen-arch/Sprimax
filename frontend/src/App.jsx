@@ -86,26 +86,31 @@ export default function App() {
     };
   }, []);
 
-  const [enquiryProduct, setEnquiryProduct] = useState({
-    title: 'LOW HYDROGEN ELECTRODE',
-    sku: 'SKU: WTE-7018-1-50KG',
-    code: 'WTE-7018-1-50KG',
-    image: productLh7018
-  });
+  // Synchronize browser URL bar dynamically with current page
+  useEffect(() => {
+    const routePath = currentPage === 'home' ? '/' : `/${currentPage}`;
+    if (window.location.pathname !== routePath) {
+      window.history.pushState({ page: currentPage }, '', routePath);
+    }
+  }, [currentPage]);
+
+  const [enquiryProduct, setEnquiryProduct] = useState(null);
 
   const handleSendEnquiry = (product) => {
     // Always dismiss any previous success modal so the user sees the enquiry form page
     setShowSuccessModal(false);
 
-    if (product && !product.nativeEvent && !product._reactName) {
+    if (product && !product.nativeEvent && !product._reactName && (product.title || product.name || product.sku)) {
       setEnquiryProduct({
-        title: product.title || product.name || 'LOW HYDROGEN ELECTRODE',
-        sku: product.sku || 'SKU: WTE-7018-1-50KG',
-        code: product.code || (product.sku ? product.sku.replace('SKU: ', '') : 'WTE-7018-1-50KG'),
+        title: product.title || product.name || '',
+        sku: product.sku || '',
+        code: product.code || (product.sku ? product.sku.replace('SKU: ', '') : ''),
         category: product.category || 'Product Enquiry',
         image: product.image || productLh7018,
         rawProduct: product.rawProduct || product,
       });
+    } else {
+      setEnquiryProduct(null);
     }
 
     setEnquiryKey((k) => k + 1);
@@ -137,11 +142,19 @@ export default function App() {
   };
 
   const handleSearchCatalog = (filters) => {
-    console.log('Catalog discovery filters:', filters);
     setShowSuccessModal(false);
-    setActiveCatalogFilters(filters);
-    setActiveCategory('');
-    setCurrentPage('products');
+    let query = '';
+    if (filters) {
+      if (typeof filters === 'string') {
+        query = filters.trim();
+      } else {
+        const parts = [filters.productSku, filters.baseMaterial, filters.industry].filter(Boolean);
+        query = parts.join(' ').trim();
+      }
+    }
+    setSearchQuery(query);
+    setSearchTab('products');
+    setCurrentPage('search');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

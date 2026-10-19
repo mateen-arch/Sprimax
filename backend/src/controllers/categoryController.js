@@ -38,7 +38,7 @@ export const getCategories = async (req, res, next) => {
 // @access  Public
 export const getFeaturedCategories = async (req, res, next) => {
   try {
-    const categories = await Category.find({ isFeaturedOnHome: { $ne: false } }).sort('sortOrder');
+    const categories = await Category.find({ isFeaturedOnHome: true, status: { $ne: 'Inactive' } }).sort('sortOrder');
 
     const productCounts = await Product.aggregate([
       { $group: { _id: '$category', count: { $sum: 1 } } },
@@ -98,6 +98,8 @@ export const createCategory = async (req, res, next) => {
       sortOrder: sortOrder || displayOrder || 0,
       image: image || '',
       status: status || 'Active',
+      isFeaturedOnHome: req.body.isFeaturedOnHome === true,
+      isWideCard: req.body.isWideCard === true,
     });
 
     const savedCategory = await newCategory.save();

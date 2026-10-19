@@ -174,6 +174,7 @@ export default function CategoriesPage({
       status: newCatData.status || 'Active',
       image: newCatData.image || '',
       description: newCatData.description || '',
+      isFeaturedOnHome: false,
     };
 
     try {

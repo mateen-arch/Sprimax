@@ -55,9 +55,10 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
   const [formData, setFormData] = useState({
     name: '',
     sku: '',
-    category: 'Welding Electrodes',
+    category: 'Mild Steel Electrodes',
     subcategory: 'Low Hydrogen',
     awsClass: 'E7018-1',
+    baseMaterial: 'Carbon Steel',
     status: 'Active',
     featured: false,
     image: '/cat-electrode.png',
@@ -243,12 +244,14 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
 
   // Open add modal
   const handleOpenAddModal = () => {
+    const defaultCat = dbCategories[0] || 'Mild Steel Electrodes';
     setFormData({
       name: '',
       sku: `WE-${Math.floor(1000 + Math.random() * 9000)}-LH`,
-      category: 'Welding Electrodes',
+      category: defaultCat,
       subcategory: 'Low Hydrogen',
       awsClass: 'E7018-1',
+      baseMaterial: 'Carbon Steel',
       status: 'Active',
       featured: false,
       image: '/cat-electrode.png',
@@ -265,8 +268,12 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
       name: formData.name.trim(),
       sku: formData.sku.trim(),
       category: formData.category,
-      subcategory: formData.subcategory,
-      awsClass: formData.awsClass.trim(),
+      categorySlug: formData.category
+        ? formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+        : 'general',
+      subcategory: formData.subcategory ? formData.subcategory.trim() : '',
+      awsClass: formData.awsClass.trim() || 'N/A',
+      baseMaterial: formData.baseMaterial || 'Carbon Steel',
       featured: formData.featured,
       status: formData.status,
       image: formData.image || '/cat-placeholder.png',
@@ -274,16 +281,26 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
 
     try {
       const res = await createProductApi(newProd);
-      const savedProd = res.product || { ...newProd, id: `prod-${Date.now()}`, updated: 'Just now' };
-      setProducts((prev) => [savedProd, ...prev]);
+      const savedProd = res.product || newProd;
+      const normalized = {
+        ...savedProd,
+        id: savedProd._id || savedProd.id || `prod-${Date.now()}`,
+        status: savedProd.status || 'Active',
+        featured: Boolean(savedProd.featured),
+        updated: savedProd.updatedAt
+          ? new Date(savedProd.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : 'Just now',
+        category: savedProd.category || 'General',
+        subcategory: savedProd.subcategory || 'General',
+        awsClass: savedProd.awsClass || 'N/A',
+        image: savedProd.image || '/cat-placeholder.png',
+      };
+      setProducts((prev) => [normalized, ...prev]);
       setAddModalOpen(false);
-      showToast(`Added product "${savedProd.name}" to MongoDB Atlas.`);
+      showToast(`Added product "${normalized.name}" to MongoDB Atlas.`);
     } catch (err) {
-      // Local fallback
-      const fallbackProd = { ...newProd, id: `prod-${Date.now()}`, updated: 'Just now' };
-      setProducts((prev) => [fallbackProd, ...prev]);
-      setAddModalOpen(false);
-      showToast(err.message || 'Added product.');
+      console.error('[Catalogue] Failed to save product to MongoDB:', err);
+      showToast(`Error: ${err.message || 'Failed to create product in database'}`);
     }
   };
 
@@ -296,6 +313,7 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
       category: prod.category,
       subcategory: prod.subcategory,
       awsClass: prod.awsClass,
+      baseMaterial: prod.baseMaterial || 'Carbon Steel',
       status: prod.status,
       featured: prod.featured,
       image: prod.image,
@@ -312,8 +330,12 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
       name: formData.name.trim(),
       sku: formData.sku.trim(),
       category: formData.category,
+      categorySlug: formData.category
+        ? formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+        : 'general',
       subcategory: formData.subcategory,
       awsClass: formData.awsClass.trim(),
+      baseMaterial: formData.baseMaterial || editProduct.baseMaterial || 'Carbon Steel',
       status: formData.status,
       featured: formData.featured,
       image: formData.image,
@@ -337,6 +359,7 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
       await updateProductApi(editProduct.sku || editProduct._id || editProduct.id, updatedData);
     } catch (err) {
       console.warn('Backend update error:', err.message);
+      showToast(`Update error: ${err.message}`);
     }
   };
 
@@ -345,21 +368,35 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
     const duplicated = {
       ...prod,
       name: `${prod.name} (Copy)`,
-      sku: `${prod.sku}-CP`,
+      sku: `${prod.sku}-CP-${Math.floor(100 + Math.random() * 900)}`,
+      categorySlug: prod.categorySlug || (prod.category ? prod.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'general'),
+      baseMaterial: prod.baseMaterial || 'Carbon Steel',
       status: 'Draft',
     };
     delete duplicated._id;
     delete duplicated.id;
+    delete duplicated.createdAt;
+    delete duplicated.updatedAt;
 
     try {
       const res = await createProductApi(duplicated);
-      const saved = res.product || { ...duplicated, id: `prod-${Date.now()}`, updated: 'Just now' };
-      setProducts((prev) => [saved, ...prev]);
+      const saved = res.product || duplicated;
+      const normalized = {
+        ...saved,
+        id: saved._id || saved.id || `prod-${Date.now()}`,
+        status: saved.status || 'Draft',
+        featured: Boolean(saved.featured),
+        updated: 'Just now',
+        category: saved.category || 'General',
+        subcategory: saved.subcategory || 'General',
+        awsClass: saved.awsClass || 'N/A',
+        image: saved.image || '/cat-placeholder.png',
+      };
+      setProducts((prev) => [normalized, ...prev]);
       showToast(`Duplicated "${prod.name}" in MongoDB Atlas.`);
     } catch (err) {
-      const fallback = { ...duplicated, id: `prod-${Date.now()}`, updated: 'Just now' };
-      setProducts((prev) => [fallback, ...prev]);
-      showToast(`Duplicated "${prod.name}".`);
+      console.error('[Catalogue] Duplicate error:', err);
+      showToast(`Error: ${err.message || 'Failed to duplicate product'}`);
     }
     setMenuOpenId(null);
   };
@@ -908,8 +945,21 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     value={formData.category}
                   >
-                    <option value="Welding Electrodes">Welding Electrodes</option>
-                    <option value="Consumables">Consumables</option>
+                    {dbCategories.length > 0 ? (
+                      dbCategories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="Mild Steel Electrodes">Mild Steel Electrodes</option>
+                        <option value="Stainless Steel">Stainless Steel</option>
+                        <option value="Hardfacing Alloys">Hardfacing Alloys</option>
+                        <option value="Submerged Arc Welding (SAW) Fluxes & Wires">Submerged Arc Welding (SAW) Fluxes & Wires</option>
+                        <option value="Aluminum Alloys">Aluminum Alloys</option>
+                      </>
+                    )}
                   </select>
                 </div>
                 <div className="modal-field">
@@ -927,6 +977,23 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
 
               <div className="modal-row-2">
                 <div className="modal-field">
+                  <label className="modal-label" htmlFor="new-product-basematerial">Base Material</label>
+                  <select
+                    id="new-product-basematerial"
+                    className="modal-input"
+                    onChange={(e) => setFormData({ ...formData, baseMaterial: e.target.value })}
+                    value={formData.baseMaterial || 'Carbon Steel'}
+                  >
+                    <option value="Carbon Steel">Carbon Steel</option>
+                    <option value="Stainless Steel">Stainless Steel</option>
+                    <option value="Low Alloy Steel">Low Alloy Steel</option>
+                    <option value="Nickel Alloys">Nickel Alloys</option>
+                    <option value="Aluminum Alloys">Aluminum Alloys</option>
+                    <option value="Copper & Bronze">Copper & Bronze</option>
+                    <option value="Cast Iron">Cast Iron</option>
+                  </select>
+                </div>
+                <div className="modal-field">
                   <label className="modal-label" htmlFor="new-product-status">Status</label>
                   <select
                     id="new-product-status"
@@ -936,21 +1003,23 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
+                    <option value="Draft">Draft</option>
                   </select>
                 </div>
-                <div className="modal-field">
-                  <label className="modal-label" htmlFor="new-product-image">Thumbnail Image</label>
-                  <select
-                    id="new-product-image"
-                    className="modal-input"
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    value={formData.image}
-                  >
-                    <option value="/cat-electrode.png">Welding Electrode (/cat-electrode.png)</option>
-                    <option value="/cat-placeholder.png">Standard Rutile Placeholder (/cat-placeholder.png)</option>
-                    <option value="/cat-mig-spool.png">Legacy MIG Wire Spool (/cat-mig-spool.png)</option>
-                  </select>
-                </div>
+              </div>
+
+              <div className="modal-field">
+                <label className="modal-label" htmlFor="new-product-image">Thumbnail Image</label>
+                <select
+                  id="new-product-image"
+                  className="modal-input"
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  value={formData.image}
+                >
+                  <option value="/cat-electrode.png">Welding Electrode (/cat-electrode.png)</option>
+                  <option value="/cat-placeholder.png">Standard Rutile Placeholder (/cat-placeholder.png)</option>
+                  <option value="/cat-mig-spool.png">Legacy MIG Wire Spool (/cat-mig-spool.png)</option>
+                </select>
               </div>
 
               <div className="modal-checkbox-row">
@@ -1043,8 +1112,21 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     value={formData.category}
                   >
-                    <option value="Welding Electrodes">Welding Electrodes</option>
-                    <option value="Consumables">Consumables</option>
+                    {dbCategories.length > 0 ? (
+                      dbCategories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="Mild Steel Electrodes">Mild Steel Electrodes</option>
+                        <option value="Stainless Steel">Stainless Steel</option>
+                        <option value="Hardfacing Alloys">Hardfacing Alloys</option>
+                        <option value="Submerged Arc Welding (SAW) Fluxes & Wires">Submerged Arc Welding (SAW) Fluxes & Wires</option>
+                        <option value="Aluminum Alloys">Aluminum Alloys</option>
+                      </>
+                    )}
                   </select>
                 </div>
                 <div className="modal-field">
@@ -1061,6 +1143,23 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
 
               <div className="modal-row-2">
                 <div className="modal-field">
+                  <label className="modal-label" htmlFor="edit-product-basematerial">Base Material</label>
+                  <select
+                    id="edit-product-basematerial"
+                    className="modal-input"
+                    onChange={(e) => setFormData({ ...formData, baseMaterial: e.target.value })}
+                    value={formData.baseMaterial || 'Carbon Steel'}
+                  >
+                    <option value="Carbon Steel">Carbon Steel</option>
+                    <option value="Stainless Steel">Stainless Steel</option>
+                    <option value="Low Alloy Steel">Low Alloy Steel</option>
+                    <option value="Nickel Alloys">Nickel Alloys</option>
+                    <option value="Aluminum Alloys">Aluminum Alloys</option>
+                    <option value="Copper & Bronze">Copper & Bronze</option>
+                    <option value="Cast Iron">Cast Iron</option>
+                  </select>
+                </div>
+                <div className="modal-field">
                   <label className="modal-label" htmlFor="edit-product-status">Status</label>
                   <select
                     id="edit-product-status"
@@ -1070,21 +1169,23 @@ export default function CataloguePage({ onLogout, onNavigate, onViewProductDetai
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
+                    <option value="Draft">Draft</option>
                   </select>
                 </div>
-                <div className="modal-field">
-                  <label className="modal-label" htmlFor="edit-product-image">Thumbnail Image</label>
-                  <select
-                    id="edit-product-image"
-                    className="modal-input"
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    value={formData.image}
-                  >
-                    <option value="/cat-electrode.png">Welding Electrode (/cat-electrode.png)</option>
-                    <option value="/cat-placeholder.png">Standard Rutile Placeholder (/cat-placeholder.png)</option>
-                    <option value="/cat-mig-spool.png">Legacy MIG Wire Spool (/cat-mig-spool.png)</option>
-                  </select>
-                </div>
+              </div>
+
+              <div className="modal-field">
+                <label className="modal-label" htmlFor="edit-product-image">Thumbnail Image</label>
+                <select
+                  id="edit-product-image"
+                  className="modal-input"
+                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  value={formData.image}
+                >
+                  <option value="/cat-electrode.png">Welding Electrode (/cat-electrode.png)</option>
+                  <option value="/cat-placeholder.png">Standard Rutile Placeholder (/cat-placeholder.png)</option>
+                  <option value="/cat-mig-spool.png">Legacy MIG Wire Spool (/cat-mig-spool.png)</option>
+                </select>
               </div>
 
               <div className="modal-checkbox-row">

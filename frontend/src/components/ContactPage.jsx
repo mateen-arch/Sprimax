@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Phone, Mail, MessageSquare, ExternalLink, ChevronDown, Award, CheckCircle2 } from 'lucide-react';
+import { MapPin, Phone, Mail, MessageSquare, ExternalLink, ChevronDown, Award, CheckCircle2, Clock } from 'lucide-react';
 import { submitEnquiry } from '../api/enquiries.js';
 
 export default function ContactPage({ onApplyDealership, onSubmitEnquiry }) {
@@ -78,51 +78,58 @@ export default function ContactPage({ onApplyDealership, onSubmitEnquiry }) {
               <h2 className="contact-card-title headline-sm">Global Headquarters</h2>
 
               <div className="contact-hq-list">
-                {/* Manufacturing Facility */}
+                {/* Headquarters Address */}
                 <div className="contact-hq-item">
                   <div className="contact-hq-icon-box" aria-hidden="true">
                     <MapPin size={17} strokeWidth={2} />
                   </div>
                   <div className="contact-hq-text">
-                    <span className="contact-hq-label data-tabular">MANUFACTURING FACILITY</span>
+                    <span className="contact-hq-label data-tabular">HEADQUARTERS</span>
                     <p className="contact-hq-val">
-                      Sprimax India Private Limited<br />
-                      G.E. Road, Raipur<br />
-                      Chhattisgarh 492001, India
+                      5th Floor, 511 National Corporate Park,<br />
+                      Geeta Nagar, Choubey Colony,<br />
+                      Raipur, Chhattisgarh 492001, India
                     </p>
                   </div>
                 </div>
 
-                {/* Direct Line */}
+                {/* Direct Contact Phone Lines */}
                 <div className="contact-hq-item">
                   <div className="contact-hq-icon-box" aria-hidden="true">
                     <Phone size={17} strokeWidth={2} />
                   </div>
                   <div className="contact-hq-text">
-                    <span className="contact-hq-label data-tabular">DIRECT LINE</span>
-                    <p className="contact-hq-val data-tabular font-bold">+1 (313) 555-0198</p>
+                    <span className="contact-hq-label data-tabular">CONTACT NUMBERS</span>
+                    <p className="contact-hq-val data-tabular font-bold">
+                      <a href="tel:9039072804" style={{ color: 'inherit', textDecoration: 'none' }}>9039072804</a><br />
+                      <a href="tel:9039072802" style={{ color: 'inherit', textDecoration: 'none' }}>9039072802</a>
+                    </p>
                   </div>
                 </div>
 
-                {/* Technical Support */}
+                {/* Official Email */}
                 <div className="contact-hq-item">
                   <div className="contact-hq-icon-box" aria-hidden="true">
                     <Mail size={17} strokeWidth={2} />
                   </div>
                   <div className="contact-hq-text">
-                    <span className="contact-hq-label data-tabular">TECHNICAL SUPPORT</span>
-                    <p className="contact-hq-val data-tabular font-mono">support@weld-tech.industrial</p>
+                    <span className="contact-hq-label data-tabular">OFFICIAL EMAIL</span>
+                    <p className="contact-hq-val data-tabular font-mono">
+                      <a href="mailto:sprimaxindia@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>sprimaxindia@gmail.com</a>
+                    </p>
                   </div>
                 </div>
 
-                {/* WhatsApp */}
+                {/* Working Hours */}
                 <div className="contact-hq-item">
                   <div className="contact-hq-icon-box" aria-hidden="true">
-                    <MessageSquare size={17} strokeWidth={2} />
+                    <Clock size={17} strokeWidth={2} />
                   </div>
                   <div className="contact-hq-text">
-                    <span className="contact-hq-label data-tabular">WHATSAPP (PROCUREMENT)</span>
-                    <p className="contact-hq-val data-tabular font-bold">+1 (313) 555-0199</p>
+                    <span className="contact-hq-label data-tabular">WORKING HOURS</span>
+                    <p className="contact-hq-val data-tabular">
+                      Mon - Sat : 10:00 AM - 06:30 PM (IST)
+                    </p>
                   </div>
                 </div>
               </div>
@@ -140,7 +147,7 @@ export default function ContactPage({ onApplyDealership, onSubmitEnquiry }) {
 
               <h2 className="contact-dealer-title headline-sm">Dealer Network</h2>
               <p className="contact-dealer-desc body-sm">
-                Interested in becoming a certified distributor of WELD-TECH consumables?
+                Interested in becoming a certified distributor of Sprimax consumables?
               </p>
 
               <button
@@ -156,8 +163,8 @@ export default function ContactPage({ onApplyDealership, onSubmitEnquiry }) {
             <div className="contact-card contact-map-card">
               <div className="contact-map-img-frame">
                 <iframe
-                  title="Sprimax India Private Limited Facility Location"
-                  src="https://maps.google.com/maps?q=Sprimax+India+Private+Limited,+21.2442166,81.6111275&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                  title="Sprimax India Headquarters Location"
+                  src="https://maps.google.com/maps?q=National+Corporate+Park,+Choubey+Colony,+Raipur,+Chhattisgarh+492001&t=&z=16&ie=UTF8&iwloc=&output=embed"
                   className="contact-map-iframe"
                   loading="lazy"
                   allowFullScreen
@@ -165,12 +172,12 @@ export default function ContactPage({ onApplyDealership, onSubmitEnquiry }) {
                 
                 {/* Coordinates Tag Badge */}
                 <div className="contact-map-coord-badge data-tabular">
-                  <span>GPS: 21.2442° N, 81.6111° E // SPRIMAX FACILITY</span>
+                  <span>511 NATIONAL CORPORATE PARK // RAIPUR</span>
                 </div>
 
                 {/* Map Overlay Button */}
                 <a
-                  href="https://maps.app.goo.gl/5Ax9CV1LzKR5Y2BA9"
+                  href="https://share.google/paKXw2Ii3fTXxrOos"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="contact-view-map-btn data-tabular"

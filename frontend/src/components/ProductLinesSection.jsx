@@ -5,23 +5,75 @@ import iconLayers from '../assets/icon-layers.png';
 import iconShield from '../assets/icon-shield.png';
 import { getFeaturedProductLines, getPrimaryCatalog } from '../api/home.js';
 
+const defaultProductLines = [
+  {
+    _id: 'default-1',
+    name: 'Mild Steel Electrodes',
+    slug: 'mild-steel-electrodes',
+    description: 'General purpose and high-deposition rutile/cellulosic rods.',
+    cardTheme: 'white',
+    watermarkType: 'gears',
+    isWideCard: false,
+    sortOrder: 1,
+  },
+  {
+    _id: 'default-2',
+    name: 'Stainless Steel',
+    slug: 'stainless-steel',
+    description: 'Corrosion-resistant alloys for demanding chemical & food grade applications.',
+    cardTheme: 'navy',
+    watermarkType: 'layers',
+    isWideCard: false,
+    sortOrder: 2,
+  },
+  {
+    _id: 'default-3',
+    name: 'Hardfacing Alloys',
+    slug: 'hardfacing-alloys',
+    description: 'Wear-resistant solutions for mining, agriculture, and earthmoving.',
+    cardTheme: 'white',
+    watermarkType: 'shield',
+    isWideCard: false,
+    sortOrder: 3,
+  },
+  {
+    _id: 'default-4',
+    name: 'Submerged Arc Welding (SAW) Fluxes & Wires',
+    slug: 'submerged-arc-welding',
+    description: 'High-productivity solutions for heavy fabrication and pressure vessels.',
+    cardTheme: 'white',
+    watermarkType: 'saw',
+    isWideCard: true,
+    sortOrder: 4,
+  },
+];
+
 export default function ProductLinesSection({ onViewSpecs, onDownloadCatalog }) {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(defaultProductLines);
   const [catalog, setCatalog] = useState({
     title: 'Complete Catalog',
     description: 'Download the full 2024 Product Guide (PDF)',
     fileUrl: '/downloads/sprimax-complete-catalog-2024.pdf',
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     // 1. Fetch live featured product line categories from database
     getFeaturedProductLines().then((data) => {
-      if (isMounted && data?.categories) {
-        setCategories(data.categories);
-        setLoading(false);
+      if (isMounted) {
+        if (data?.categories && data.categories.length > 0) {
+          // Strictly keep only the 4 core product line categories on homepage
+          const featured = data.categories.filter((c) => 
+            c.isFeaturedOnHome === true && 
+            c.name !== 'Low Alloy High Tensile' && 
+            c.name !== 'Nickel & Special Alloys'
+          );
+          setCategories(featured.length > 0 ? featured : defaultProductLines);
+        } else {
+          setCategories(defaultProductLines);
+        }
       }
     });
 

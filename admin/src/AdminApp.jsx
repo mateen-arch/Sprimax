@@ -14,14 +14,35 @@ import CertificationsManagementPage from './CertificationsManagementPage.jsx';
 import IndustriesManagementPage from './IndustriesManagementPage.jsx';
 import BannerManagementPage from './BannerManagementPage.jsx';
 import GlobalSettingsPage from './GlobalSettingsPage.jsx';
+import AdminProfilePage from './AdminProfilePage.jsx';
+import AdminHelpPage from './AdminHelpPage.jsx';
+import { useEffect } from 'react';
 
 export default function AdminApp() {
   const [signedIn, setSignedIn] = useState(true);
-  // Default to Dashboard
-  const [currentPage, setCurrentPage] = useState('Dashboard');
+  // Default to Dashboard or resolve from current URL pathname
+  const [currentPage, setCurrentPage] = useState(() => {
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('profile')) return 'Admin Profile';
+    if (path.includes('help')) return 'Help/Support';
+    return 'Dashboard';
+  });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedEnquiry, setSelectedEnquiry] = useState(null);
   const [activeEnquiryType, setActiveEnquiryType] = useState('Product Enquiries');
+
+  // Synchronize browser URL bar dynamically
+  useEffect(() => {
+    let route = '/admin';
+    if (currentPage === 'Admin Profile') route = '/admin/profile';
+    else if (currentPage === 'Help/Support') route = '/admin/help';
+    else if (currentPage === 'Catalogue') route = '/admin/catalogue';
+    else if (currentPage === 'Dashboard') route = '/admin';
+    
+    if (window.location.pathname !== route) {
+      window.history.pushState({ page: currentPage }, '', route);
+    }
+  }, [currentPage]);
 
   if (!signedIn) {
     return (
@@ -156,6 +177,24 @@ export default function AdminApp() {
   if (currentPage === 'Global Settings' || currentPage === 'Settings') {
     return (
       <GlobalSettingsPage
+        onLogout={() => setSignedIn(false)}
+        onNavigate={(page) => setCurrentPage(page)}
+      />
+    );
+  }
+
+  if (currentPage === 'Admin Profile' || currentPage === 'Profile') {
+    return (
+      <AdminProfilePage
+        onLogout={() => setSignedIn(false)}
+        onNavigate={(page) => setCurrentPage(page)}
+      />
+    );
+  }
+
+  if (currentPage === 'Help/Support' || currentPage === 'Help' || currentPage === 'Support') {
+    return (
+      <AdminHelpPage
         onLogout={() => setSignedIn(false)}
         onNavigate={(page) => setCurrentPage(page)}
       />

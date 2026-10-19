@@ -39,6 +39,9 @@ export default function SearchProductsPage({
   useEffect(() => {
     if (initialQuery !== undefined) {
       setSearchQuery(initialQuery);
+      setSelectedAws([]);
+      setSelectedMaterials([]);
+      setSelectedCategories([]);
     }
   }, [initialQuery]);
 
@@ -284,13 +287,17 @@ export default function SearchProductsPage({
       // 1. Search Query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const titleMatch = product.title?.toLowerCase().includes(q);
-        const skuMatch = product.sku?.toLowerCase().includes(q);
-        const awsMatch = product.aws?.toLowerCase().includes(q);
-        const descMatch = product.description?.toLowerCase().includes(q);
-        const catMatch = product.category?.toLowerCase().includes(q);
-        const matMatch = product.baseMaterial?.toLowerCase().includes(q);
-        if (!titleMatch && !skuMatch && !awsMatch && !descMatch && !catMatch && !matMatch) {
+        const indStr = Array.isArray(product.industries) ? product.industries.join(' ') : (product.industries || '');
+        const combined = `${product.title || ''} ${product.sku || ''} ${product.aws || ''} ${product.description || ''} ${product.category || ''} ${product.subcategory || ''} ${product.baseMaterial || ''} ${indStr}`.toLowerCase();
+        
+        let matches = combined.includes(q);
+        if (!matches) {
+          const tokens = q.split(/\s+/).filter(Boolean);
+          if (tokens.length > 1) {
+            matches = tokens.every((token) => combined.includes(token));
+          }
+        }
+        if (!matches) {
           return false;
         }
       }
@@ -319,11 +326,15 @@ export default function SearchProductsPage({
     return downloadsList.filter((doc) => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
-      const titleMatch = doc.title?.toLowerCase().includes(q);
-      const descMatch = doc.description?.toLowerCase().includes(q);
-      const catMatch = doc.category?.toLowerCase().includes(q);
-      const typeMatch = doc.resourceType?.toLowerCase().includes(q) || doc.fileType?.toLowerCase().includes(q);
-      return titleMatch || descMatch || catMatch || typeMatch;
+      const combined = `${doc.title || ''} ${doc.description || ''} ${doc.category || ''} ${doc.resourceType || ''} ${doc.fileType || ''}`.toLowerCase();
+      let matches = combined.includes(q);
+      if (!matches) {
+        const tokens = q.split(/\s+/).filter(Boolean);
+        if (tokens.length > 1) {
+          matches = tokens.every((t) => combined.includes(t));
+        }
+      }
+      return matches;
     });
   }, [downloadsList, searchQuery]);
 
@@ -332,10 +343,16 @@ export default function SearchProductsPage({
     return technicalPagesList.filter((page) => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
-      const titleMatch = page.title.toLowerCase().includes(q);
-      const descMatch = page.description.toLowerCase().includes(q);
-      const keyMatch = page.keywords?.some((k) => k.includes(q));
-      return titleMatch || descMatch || keyMatch;
+      const keyStr = (page.keywords || []).join(' ');
+      const combined = `${page.title || ''} ${page.description || ''} ${page.category || ''} ${keyStr}`.toLowerCase();
+      let matches = combined.includes(q);
+      if (!matches) {
+        const tokens = q.split(/\s+/).filter(Boolean);
+        if (tokens.length > 1) {
+          matches = tokens.every((token) => combined.includes(token));
+        }
+      }
+      return matches;
     });
   }, [technicalPagesList, searchQuery]);
 
@@ -344,10 +361,16 @@ export default function SearchProductsPage({
     return articlesList.filter((art) => {
       if (!searchQuery.trim()) return true;
       const q = searchQuery.toLowerCase().trim();
-      const titleMatch = art.title.toLowerCase().includes(q);
-      const descMatch = art.description.toLowerCase().includes(q);
-      const keyMatch = art.keywords?.some((k) => k.includes(q));
-      return titleMatch || descMatch || keyMatch;
+      const keyStr = (art.keywords || []).join(' ');
+      const combined = `${art.title || ''} ${art.description || ''} ${art.category || ''} ${keyStr}`.toLowerCase();
+      let matches = combined.includes(q);
+      if (!matches) {
+        const tokens = q.split(/\s+/).filter(Boolean);
+        if (tokens.length > 1) {
+          matches = tokens.every((token) => combined.includes(token));
+        }
+      }
+      return matches;
     });
   }, [articlesList, searchQuery]);
 

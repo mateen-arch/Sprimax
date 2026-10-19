@@ -60,7 +60,7 @@ const categorySchema = new mongoose.Schema(
     },
     isFeaturedOnHome: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     isWideCard: {
       type: Boolean,

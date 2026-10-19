@@ -21,6 +21,12 @@ import {
 import AdminSidebar from './AdminSidebar.jsx';
 import AdminTopbar from './AdminTopbar.jsx';
 import { fetchProducts } from './api/products.js';
+import {
+  fetchCertifications,
+  createCertificationApi,
+  updateCertificationApi,
+  deleteCertificationApi
+} from './api/certifications.js';
 import './CertificationsManagementPage.css';
 
 const STORAGE_KEY = 'sprimax_certifications_data';
@@ -112,7 +118,7 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
   const [currentPageNum, setCurrentPageNum] = useState(1);
   const pageSize = 5;
 
-  // Real-time certificates state stored locally
+  // Real-time certificates state stored locally & synced with DB
   const [certificates, setCertificates] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -122,6 +128,25 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
     }
     return DEFAULT_CERTIFICATES;
   });
+
+  const loadCertificationsFromDb = async () => {
+    try {
+      const data = await fetchCertifications();
+      if (data && data.certifications && data.certifications.length > 0) {
+        const formatted = data.certifications.map((c) => ({
+          ...c,
+          id: c._id || c.id,
+        }));
+        setCertificates(formatted);
+      }
+    } catch (err) {
+      console.warn('Could not load certifications from DB, using cache:', err);
+    }
+  };
+
+  useEffect(() => {
+    loadCertificationsFromDb();
+  }, []);
 
   useEffect(() => {
     try {
@@ -256,15 +281,14 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
   };
 
   // Submit Add Certificate
-  const handleAddCertSubmit = (e) => {
+  const handleAddCertSubmit = async (e) => {
     e.preventDefault();
     if (!certName.trim()) {
       showToast('Please enter a Certificate Name.');
       return;
     }
 
-    const newCertItem = {
-      id: `cert-${Date.now()}`,
+    const payload = {
       name: certName.trim(),
       subScope: certScope.trim() || 'Technical Standard Compliance',
       issuer: certIssuer.trim() || 'Accredited Verification Authority',
@@ -275,9 +299,19 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
       documentName: uploadedDoc?.name || `${certName.trim().replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
     };
 
-    setCertificates((prev) => [newCertItem, ...prev]);
-    setModalOpen(false);
-    showToast(`Certificate "${newCertItem.name}" registered successfully.`);
+    try {
+      const res = await createCertificationApi(payload);
+      const created = res.certification || res;
+      setCertificates((prev) => [{ ...created, id: created._id || created.id }, ...prev]);
+      setModalOpen(false);
+      showToast(`Certificate "${payload.name}" registered successfully.`);
+    } catch (err) {
+      console.warn('Saved cert locally (DB fallback):', err);
+      const localItem = { ...payload, id: `cert-${Date.now()}` };
+      setCertificates((prev) => [localItem, ...prev]);
+      setModalOpen(false);
+      showToast(`Certificate "${payload.name}" registered.`);
+    }
   };
 
   // Actions: View Details Modal
@@ -295,22 +329,33 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
   };
 
   // Actions: Submit Edit
-  const handleSaveEditCert = (e) => {
+  const handleSaveEditCert = async (e) => {
     e.preventDefault();
     if (!currentEditCert) return;
 
+    const payload = {
+      ...currentEditCert,
+      expiryCountdown:
+        currentEditCert.status === 'Expiring Soon'
+          ? 'Expires in 30 days'
+          : currentEditCert.status === 'Expired'
+          ? 'Expired'
+          : null,
+    };
+
+    try {
+      const targetId = currentEditCert._id || currentEditCert.id;
+      if (targetId && !targetId.startsWith('cert-')) {
+        await updateCertificationApi(targetId, payload);
+      }
+    } catch (err) {
+      console.warn('Could not update cert in DB:', err);
+    }
+
     setCertificates((prev) =>
       prev.map((c) =>
-        c.id === currentEditCert.id
-          ? {
-              ...currentEditCert,
-              expiryCountdown:
-                currentEditCert.status === 'Expiring Soon'
-                  ? 'Expires in 30 days'
-                  : currentEditCert.status === 'Expired'
-                  ? 'Expired'
-                  : null,
-            }
+        (c.id === currentEditCert.id || c._id === currentEditCert._id)
+          ? { ...payload }
           : c
       )
     );
@@ -319,19 +364,31 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
   };
 
   // Actions: Toggle / Set Status
-  const handleSetStatus = (certId, nextStatus) => {
+  const handleSetStatus = async (certId, nextStatus) => {
+    const payload = {
+      status: nextStatus,
+      expiryCountdown:
+        nextStatus === 'Expiring Soon'
+          ? 'Expires in 30 days'
+          : nextStatus === 'Expired'
+          ? 'Expired'
+          : null,
+    };
+
+    try {
+      if (certId && !certId.startsWith('cert-')) {
+        await updateCertificationApi(certId, payload);
+      }
+    } catch (err) {
+      console.warn('Could not update cert status in DB:', err);
+    }
+
     setCertificates((prev) =>
       prev.map((c) =>
-        c.id === certId
+        (c.id === certId || c._id === certId)
           ? {
               ...c,
-              status: nextStatus,
-              expiryCountdown:
-                nextStatus === 'Expiring Soon'
-                  ? 'Expires in 30 days'
-                  : nextStatus === 'Expired'
-                  ? 'Expired'
-                  : null,
+              ...payload,
             }
           : c
       )
@@ -341,8 +398,16 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
   };
 
   // Actions: Delete
-  const handleDeleteCert = (certId, name) => {
-    setCertificates((prev) => prev.filter((c) => c.id !== certId));
+  const handleDeleteCert = async (certId, name) => {
+    try {
+      if (certId && !certId.startsWith('cert-')) {
+        await deleteCertificationApi(certId);
+      }
+    } catch (err) {
+      console.warn('Could not delete cert in DB:', err);
+    }
+
+    setCertificates((prev) => prev.filter((c) => c.id !== certId && c._id !== certId));
     setActiveMenuId(null);
     showToast(`Removed certificate "${name}".`);
   };
