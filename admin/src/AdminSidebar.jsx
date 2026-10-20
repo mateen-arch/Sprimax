@@ -11,12 +11,15 @@ import {
   ChevronDown,
   ChevronUp,
   Settings,
+  BookOpen,
+  Briefcase,
 } from 'lucide-react';
 import './AdminSidebar.css';
 
 const topNavItems = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Catalogue', icon: Package },
+  { label: 'Blogs', icon: BookOpen },
 ];
 
 export default function AdminSidebar({
@@ -44,8 +47,18 @@ export default function AdminSidebar({
     'Banner Management',
   ].includes(currentNav);
 
+  const isCareersActive = [
+    'Careers',
+    'CareersJobs',
+    'AddCareersJob',
+    'EditCareersJob',
+    'PreviewCareersJob',
+    'CareersApplications',
+  ].includes(currentNav);
+
   const [enquiriesOpen, setEnquiriesOpen] = useState(isEnquiriesActive);
   const [managementOpen, setManagementOpen] = useState(isManagementActive);
+  const [careersOpen, setCareersOpen] = useState(isCareersActive);
 
   const handleNavClick = (label) => {
     setMobileOpen?.(false);
@@ -77,7 +90,9 @@ export default function AdminSidebar({
 
         <nav aria-label="Admin navigation" className="sidebar-navigation">
           {topNavItems.map(({ label, icon: Icon }) => {
-            const isActive = currentNav === label;
+            const isActive =
+              currentNav === label ||
+              (label === 'Blogs' && ['Blogs', 'AddBlog', 'EditBlog', 'PreviewBlog'].includes(currentNav));
             return (
               <button
                 key={label}
@@ -208,6 +223,46 @@ export default function AdminSidebar({
                 onClick={() => handleNavClick('Banner Management')}
               >
                 Banner Management
+              </button>
+            </div>
+          )}
+
+          {/* Careers Collapsible Dropdown */}
+          <button
+            aria-expanded={careersOpen}
+            className={`sidebar-link sidebar-link--careers${isCareersActive ? ' sidebar-link--active' : ''}`}
+            onClick={() => {
+              setCareersOpen((open) => !open);
+              if (!careersOpen && !isCareersActive) {
+                handleNavClick('CareersJobs');
+              }
+            }}
+            type="button"
+          >
+            <Briefcase aria-hidden="true" />
+            <span>Careers</span>
+            {careersOpen ? (
+              <ChevronUp className="sidebar-chevron" aria-hidden="true" />
+            ) : (
+              <ChevronDown className="sidebar-chevron" aria-hidden="true" />
+            )}
+          </button>
+
+          {careersOpen && (
+            <div className="sidebar-subnav">
+              <button
+                type="button"
+                className={`sidebar-subnav-btn${['CareersJobs', 'AddCareersJob', 'EditCareersJob', 'PreviewCareersJob'].includes(currentNav) ? ' active' : ''}`}
+                onClick={() => handleNavClick('CareersJobs')}
+              >
+                Job Postings
+              </button>
+              <button
+                type="button"
+                className={`sidebar-subnav-btn${currentNav === 'CareersApplications' ? ' active' : ''}`}
+                onClick={() => handleNavClick('CareersApplications')}
+              >
+                Applications
               </button>
             </div>
           )}

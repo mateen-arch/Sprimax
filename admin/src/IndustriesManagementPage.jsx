@@ -30,6 +30,7 @@ import {
   updateProjectRequirementApi,
   deleteProjectRequirementApi,
 } from './api/industries.js';
+import { uploadImageApi } from './api/upload.js';
 import './IndustriesManagementPage.css';
 
 const AVAILABLE_PRODUCTS = [
@@ -220,14 +221,21 @@ export default function IndustriesManagementPage({ onLogout, onNavigate }) {
     setFormSlug(generatedSlug);
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      showToast('Uploading industry visual to Cloudinary...');
+      const data = await uploadImageApi(file, { folder: 'sprimax/industries' });
+      setFormImage(data.secure_url || data.url);
+      showToast('Industry visual uploaded.');
+    } catch (err) {
+      showToast(err.message || 'Upload failed.', 'error');
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 

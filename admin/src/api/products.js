@@ -76,23 +76,13 @@ export async function deleteProductApi(id) {
   return data;
 }
 
+import { uploadImageApi as centralUploadImageApi } from './upload.js';
+
 /**
- * Upload an image file to the backend
+ * Upload an image file to Cloudinary via backend
  */
-export async function uploadImageApi(file) {
-  const formData = new FormData();
-  formData.append('image', file);
-
-  const res = await fetch(`${API_BASE}/upload`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.message || 'Failed to upload image file');
-  }
-  return data;
+export async function uploadImageApi(file, folder = 'sprimax/products') {
+  return centralUploadImageApi(file, { folder });
 }
 
 /**

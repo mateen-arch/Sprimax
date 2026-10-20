@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Search, Menu, X, ArrowRight } from 'lucide-react';
 
-export default function Navbar({ onSendEnquiry, onSearchSubmit, currentSection, setCurrentSection }) {
-  const [searchQuery, setSearchQuery] = useState('');
+export default function Navbar({
+  onSendEnquiry,
+  onSearchSubmit,
+  searchQuery = '',
+  onSearchChange,
+  onSearchFocus,
+  currentSection,
+  setCurrentSection,
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -18,6 +25,26 @@ export default function Navbar({ onSendEnquiry, onSearchSubmit, currentSection, 
     e.preventDefault();
     if (onSearchSubmit) {
       onSearchSubmit(searchQuery);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    const val = e.target.value;
+    if (onSearchChange) {
+      onSearchChange(val);
+    }
+  };
+
+  const handleSearchInputFocus = () => {
+    if (onSearchFocus) {
+      onSearchFocus();
+    }
+  };
+
+  const handleClearSearch = (e) => {
+    e.stopPropagation();
+    if (onSearchChange) {
+      onSearchChange('');
     }
   };
 
@@ -70,10 +97,22 @@ export default function Navbar({ onSendEnquiry, onSearchSubmit, currentSection, 
               type="text"
               placeholder="Search SKU or Class..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchInputChange}
+              onFocus={handleSearchInputFocus}
+              onClick={handleSearchInputFocus}
               className="navbar-search-input body-md"
               aria-label="Search SKU or Class"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                className="navbar-search-clear-btn"
+                onClick={handleClearSearch}
+                aria-label="Clear search"
+              >
+                <X size={14} />
+              </button>
+            )}
             <button type="submit" className="navbar-search-btn" aria-label="Submit search">
               <Search size={16} strokeWidth={2} />
             </button>
@@ -109,9 +148,21 @@ export default function Navbar({ onSendEnquiry, onSearchSubmit, currentSection, 
                 type="text"
                 placeholder="Search SKU or Class..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchInputChange}
+                onFocus={handleSearchInputFocus}
+                onClick={handleSearchInputFocus}
                 className="navbar-search-input body-md"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="navbar-search-clear-btn"
+                  onClick={handleClearSearch}
+                  aria-label="Clear search"
+                >
+                  <X size={14} />
+                </button>
+              )}
               <button type="submit" className="navbar-search-btn">
                 <Search size={16} />
               </button>

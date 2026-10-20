@@ -13,6 +13,7 @@ import sectorInfrastructure from '../assets/sector-infrastructure.png';
 import sectorManufacturing from '../assets/sector-manufacturing.png';
 import sectorOilGas from '../assets/sector-oil-gas.png';
 import noImagePlaceholder from '../assets/no-image-placeholder.png';
+import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 const LOCAL_BANNER_MAP = {
   'fabrication': sectorFabrication,
@@ -33,7 +34,7 @@ function resolveIndustryBanner(industry) {
   const banner = industry.solutionBanner || industry.image;
 
   if (banner && (banner.startsWith('http://') || banner.startsWith('https://') || banner.startsWith('data:'))) {
-    return banner;
+    return getOptimizedImageUrl(banner, 'banner');
   }
 
   const slug = (industry.slug || '').toLowerCase().trim();

@@ -27,6 +27,7 @@ import {
   updateCertificationApi,
   deleteCertificationApi
 } from './api/certifications.js';
+import { uploadImageApi } from './api/upload.js';
 import './CertificationsManagementPage.css';
 
 const STORAGE_KEY = 'sprimax_certifications_data';
@@ -288,6 +289,16 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
       return;
     }
 
+    let imageUrl = '';
+    if (uploadedDoc) {
+      try {
+        const data = await uploadImageApi(uploadedDoc, { folder: 'sprimax/certifications' });
+        imageUrl = data.secure_url || data.url;
+      } catch (err) {
+        console.warn('Doc upload warning:', err.message);
+      }
+    }
+
     const payload = {
       name: certName.trim(),
       subScope: certScope.trim() || 'Technical Standard Compliance',
@@ -297,6 +308,8 @@ export default function CertificationsManagementPage({ onLogout, onNavigate }) {
       status: certStatus,
       associatedProducts: selectedProductNames,
       documentName: uploadedDoc?.name || `${certName.trim().replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+      image: imageUrl,
+      certificateImage: imageUrl,
     };
 
     try {

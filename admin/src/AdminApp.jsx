@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLogin from './AdminLogin.jsx';
 import DashboardPage from './DashboardPage.jsx';
 import CataloguePage from './CataloguePage.jsx';
@@ -16,20 +16,44 @@ import BannerManagementPage from './BannerManagementPage.jsx';
 import GlobalSettingsPage from './GlobalSettingsPage.jsx';
 import AdminProfilePage from './AdminProfilePage.jsx';
 import AdminHelpPage from './AdminHelpPage.jsx';
-import { useEffect } from 'react';
+import BlogManagementPage from './BlogManagementPage.jsx';
+import BlogEditorPage from './BlogEditorPage.jsx';
+import BlogPreviewPage from './BlogPreviewPage.jsx';
+import CareersJobsPage from './CareersJobsPage.jsx';
+import CareersJobEditorPage from './CareersJobEditorPage.jsx';
+import CareersJobPreviewPage from './CareersJobPreviewPage.jsx';
+import CareersApplicationsPage from './CareersApplicationsPage.jsx';
+import CareersSettingsModal from './CareersSettingsModal.jsx';
+import AdminSidebar from './AdminSidebar.jsx';
+import AdminTopbar from './AdminTopbar.jsx';
 
 export default function AdminApp() {
   const [signedIn, setSignedIn] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
+  const [activeEnquiryType, setActiveEnquiryType] = useState('Product Enquiries');
+  const [selectedBlogId, setSelectedBlogId] = useState(null);
+  const [selectedCareersJobId, setSelectedCareersJobId] = useState(null);
+  const [careersSettingsOpen, setCareersSettingsOpen] = useState(false);
+  const [careersAppJobFilter, setCareersAppJobFilter] = useState({ id: null, title: null });
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   // Default to Dashboard or resolve from current URL pathname
   const [currentPage, setCurrentPage] = useState(() => {
     const path = window.location.pathname.toLowerCase();
     if (path.includes('profile')) return 'Admin Profile';
     if (path.includes('help')) return 'Help/Support';
+    if (path.includes('blogs/new')) return 'AddBlog';
+    if (path.includes('preview') && path.includes('blogs')) return 'PreviewBlog';
+    if (path.includes('edit') && path.includes('blogs')) return 'EditBlog';
+    if (path.includes('blogs')) return 'Blogs';
+    if (path.includes('careers/jobs/new')) return 'AddCareersJob';
+    if (path.includes('careers/jobs') && path.includes('preview')) return 'PreviewCareersJob';
+    if (path.includes('careers/jobs') && path.includes('edit')) return 'EditCareersJob';
+    if (path.includes('careers/jobs')) return 'CareersJobs';
+    if (path.includes('careers/applications')) return 'CareersApplications';
     return 'Dashboard';
   });
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedEnquiry, setSelectedEnquiry] = useState(null);
-  const [activeEnquiryType, setActiveEnquiryType] = useState('Product Enquiries');
 
   // Synchronize browser URL bar dynamically
   useEffect(() => {
@@ -38,11 +62,20 @@ export default function AdminApp() {
     else if (currentPage === 'Help/Support') route = '/admin/help';
     else if (currentPage === 'Catalogue') route = '/admin/catalogue';
     else if (currentPage === 'Dashboard') route = '/admin';
+    else if (currentPage === 'Blogs') route = '/admin/blogs';
+    else if (currentPage === 'AddBlog') route = '/admin/blogs/new';
+    else if (currentPage === 'EditBlog' && selectedBlogId) route = `/admin/blogs/${selectedBlogId}/edit`;
+    else if (currentPage === 'PreviewBlog' && selectedBlogId) route = `/admin/blogs/${selectedBlogId}/preview`;
+    else if (currentPage === 'CareersJobs') route = '/admin/careers/jobs';
+    else if (currentPage === 'AddCareersJob') route = '/admin/careers/jobs/new';
+    else if (currentPage === 'EditCareersJob' && selectedCareersJobId) route = `/admin/careers/jobs/${selectedCareersJobId}/edit`;
+    else if (currentPage === 'PreviewCareersJob' && selectedCareersJobId) route = `/admin/careers/jobs/${selectedCareersJobId}/preview`;
+    else if (currentPage === 'CareersApplications') route = '/admin/careers/applications';
     
     if (window.location.pathname !== route) {
-      window.history.pushState({ page: currentPage }, '', route);
+      window.history.pushState({ page: currentPage, blogId: selectedBlogId, jobId: selectedCareersJobId }, '', route);
     }
-  }, [currentPage]);
+  }, [currentPage, selectedBlogId, selectedCareersJobId]);
 
   if (!signedIn) {
     return (
@@ -224,6 +257,235 @@ export default function AdminApp() {
         onLogout={() => setSignedIn(false)}
         onNavigate={(page) => setCurrentPage(page)}
       />
+    );
+  }
+
+  if (currentPage === 'Blogs') {
+    return (
+      <BlogManagementPage
+        onLogout={() => setSignedIn(false)}
+        onNavigate={(page) => setCurrentPage(page)}
+        onEditBlog={(id) => {
+          setSelectedBlogId(id);
+          setCurrentPage('EditBlog');
+        }}
+        onPreviewBlog={(id) => {
+          setSelectedBlogId(id);
+          setCurrentPage('PreviewBlog');
+        }}
+      />
+    );
+  }
+
+  if (currentPage === 'AddBlog') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="Blogs"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <BlogEditorPage
+            blogId={null}
+            onBack={() => setCurrentPage('Blogs')}
+            onNavigate={(page) => setCurrentPage(page)}
+            onPreview={(id) => {
+              setSelectedBlogId(id);
+              setCurrentPage('PreviewBlog');
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === 'EditBlog') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="Blogs"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <BlogEditorPage
+            blogId={selectedBlogId}
+            onBack={() => setCurrentPage('Blogs')}
+            onNavigate={(page) => setCurrentPage(page)}
+            onPreview={(id) => {
+              setSelectedBlogId(id);
+              setCurrentPage('PreviewBlog');
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === 'PreviewBlog') {
+    return (
+      <BlogPreviewPage
+        blogId={selectedBlogId}
+        onBackToEditor={() => setCurrentPage(selectedBlogId ? 'EditBlog' : 'Blogs')}
+      />
+    );
+  }
+
+  /* ========================================================================
+     CAREERS MANAGEMENT MODULE
+     ======================================================================== */
+
+  if (currentPage === 'CareersJobs') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="CareersJobs"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <AdminTopbar
+            title="Careers Management"
+            subtitle="Enterprise Engineering Requisitions & Openings"
+            onLogout={() => setSignedIn(false)}
+            onMenuClick={() => setMobileOpen(true)}
+          />
+          <div className="admin-content">
+            <CareersJobsPage
+              onNavigate={(page) => setCurrentPage(page)}
+              onAddJob={() => {
+                setSelectedCareersJobId(null);
+                setCurrentPage('AddCareersJob');
+              }}
+              onEditJob={(id) => {
+                setSelectedCareersJobId(id);
+                setCurrentPage('EditCareersJob');
+              }}
+              onPreviewJob={(id) => {
+                setSelectedCareersJobId(id);
+                setCurrentPage('PreviewCareersJob');
+              }}
+              onOpenSettings={() => setCareersSettingsOpen(true)}
+              onViewApplications={(jobId, jobTitle) => {
+                setCareersAppJobFilter({ id: jobId, title: jobTitle });
+                setCurrentPage('CareersApplications');
+              }}
+            />
+          </div>
+        </div>
+        <CareersSettingsModal
+          isOpen={careersSettingsOpen}
+          onClose={() => setCareersSettingsOpen(false)}
+        />
+      </div>
+    );
+  }
+
+  if (currentPage === 'AddCareersJob') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="CareersJobs"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <CareersJobEditorPage
+            jobId={null}
+            onBack={() => setCurrentPage('CareersJobs')}
+            onNavigate={(page) => setCurrentPage(page)}
+            onPreview={(id) => {
+              setSelectedCareersJobId(id);
+              setCurrentPage('PreviewCareersJob');
+            }}
+          />
+        </div>
+        <CareersSettingsModal
+          isOpen={careersSettingsOpen}
+          onClose={() => setCareersSettingsOpen(false)}
+        />
+      </div>
+    );
+  }
+
+  if (currentPage === 'EditCareersJob') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="CareersJobs"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <CareersJobEditorPage
+            jobId={selectedCareersJobId}
+            onBack={() => setCurrentPage('CareersJobs')}
+            onNavigate={(page) => setCurrentPage(page)}
+            onPreview={(id) => {
+              setSelectedCareersJobId(id);
+              setCurrentPage('PreviewCareersJob');
+            }}
+          />
+        </div>
+        <CareersSettingsModal
+          isOpen={careersSettingsOpen}
+          onClose={() => setCareersSettingsOpen(false)}
+        />
+      </div>
+    );
+  }
+
+  if (currentPage === 'PreviewCareersJob') {
+    return (
+      <CareersJobPreviewPage
+        jobId={selectedCareersJobId}
+        onBackToEditor={() => setCurrentPage(selectedCareersJobId ? 'EditCareersJob' : 'CareersJobs')}
+      />
+    );
+  }
+
+  if (currentPage === 'CareersApplications') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="CareersApplications"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <AdminTopbar
+            title="Candidate Applications"
+            subtitle="Technical Dockets & Candidate Evaluation Pipeline"
+            onLogout={() => setSignedIn(false)}
+            onMenuClick={() => setMobileOpen(true)}
+          />
+          <div className="admin-content">
+            <CareersApplicationsPage
+              initialJobId={careersAppJobFilter.id}
+              initialJobTitle={careersAppJobFilter.title}
+              onNavigate={(page) => setCurrentPage(page)}
+              onOpenSettings={() => setCareersSettingsOpen(true)}
+            />
+          </div>
+        </div>
+        <CareersSettingsModal
+          isOpen={careersSettingsOpen}
+          onClose={() => setCareersSettingsOpen(false)}
+        />
+      </div>
     );
   }
 

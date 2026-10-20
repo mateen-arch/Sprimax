@@ -47,6 +47,7 @@ export default function SitemapPage({ onNavigate }) {
         { label: 'Technical Data Sheets', page: 'resources', type: 'tds' },
         { label: 'Product Catalogs (PDF)', page: 'resources', type: 'catalog' },
         { label: 'ISO Certifications', page: 'resources', type: 'cert' },
+        { label: 'Industrial Insights & Blog', page: 'blog' },
         { label: 'FAQ', page: 'faq' },
       ],
     },
@@ -57,6 +58,7 @@ export default function SitemapPage({ onNavigate }) {
       links: [
         { label: 'About Sprimax', page: 'about' },
         { label: 'Company Overview & Sectors', page: 'company' },
+        { label: 'Global Careers & Opportunities', page: 'careers' },
         { label: 'Custom Project Requirements', page: 'submit-requirements' },
       ],
     },

@@ -44,9 +44,9 @@
 
 .edit-page-title {
   margin: 0;
-  color: var(--deep-navy);
-  font-family: var(--font-headline);
-  font-size: 32px; /* HEADLINE LG */
+  color: var(--deep-navy, #212e68);
+  font-family: var(--font-headline, 'Hanken Grotesk', sans-serif);
+  font-size: 30px;
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.02em;
@@ -54,10 +54,11 @@
 
 .edit-page-subtitle {
   margin: 6px 0 0;
-  color: var(--steel-blue);
-  font-family: var(--font-body);
-  font-size: 16px; /* BODY MD */
-  line-height: 1.4;
+  color: var(--steel-blue, #395f94);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 15px;
+  max-width: 680px;
+  line-height: 1.5;
 }
 
 /* Published Badge */

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar.jsx';
 import AdminTopbar from './AdminTopbar.jsx';
+import { uploadImageApi } from './api/upload.js';
 import './GlobalSettingsPage.css';
 
 const TABS = [
@@ -65,6 +66,9 @@ export default function GlobalSettingsPage({ onLogout, onNavigate }) {
     'Leading provider of heavy manufacturing equipment and industrial supply chain solutions.'
   );
   const [companyLogo, setCompanyLogo] = useState('/logo.png');
+  const [companyFavicon, setCompanyFavicon] = useState('');
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
 
   // Tab 2: Contact
   const [primaryPhone, setPrimaryPhone] = useState('+1 (555) 123-4567');
@@ -218,12 +222,39 @@ export default function GlobalSettingsPage({ onLogout, onNavigate }) {
     showToast('Recipient removed');
   };
 
-  const handleUploadLogo = (e) => {
+  const handleUploadLogo = async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setCompanyLogo(URL.createObjectURL(file));
+    if (!file) return;
+    setIsUploadingLogo(true);
+    try {
+      const data = await uploadImageApi(file, { folder: 'sprimax/settings' });
+      setCompanyLogo(data.secure_url || data.url);
       setHasUnsavedChanges(true);
-      showToast('Logo updated');
+      showToast('Logo uploaded to Cloudinary');
+    } catch (err) {
+      console.error('Logo upload error:', err);
+      showToast('Failed to upload logo: ' + (err.message || 'Error'));
+    } finally {
+      setIsUploadingLogo(false);
+      if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleUploadFavicon = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingFavicon(true);
+    try {
+      const data = await uploadImageApi(file, { folder: 'sprimax/settings' });
+      setCompanyFavicon(data.secure_url || data.url);
+      setHasUnsavedChanges(true);
+      showToast('Favicon uploaded to Cloudinary');
+    } catch (err) {
+      console.error('Favicon upload error:', err);
+      showToast('Failed to upload favicon: ' + (err.message || 'Error'));
+    } finally {
+      setIsUploadingFavicon(false);
+      if (e.target) e.target.value = '';
     }
   };
 
@@ -350,7 +381,7 @@ export default function GlobalSettingsPage({ onLogout, onNavigate }) {
                     {/* Logo Card */}
                     <div
                       className="settings-upload-dropzone"
-                      onClick={() => logoInputRef.current?.click()}
+                      onClick={() => !isUploadingLogo && logoInputRef.current?.click()}
                     >
                       <input
                         type="file"
@@ -358,39 +389,62 @@ export default function GlobalSettingsPage({ onLogout, onNavigate }) {
                         style={{ display: 'none' }}
                         accept="image/*"
                         onChange={handleUploadLogo}
+                        disabled={isUploadingLogo}
                       />
                       <div className="settings-media-preview-box">
-                        <img
-                          src={companyLogo}
-                          alt="Company Logo Preview"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
+                        {isUploadingLogo ? (
+                          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Uploading...</span>
+                        ) : companyLogo ? (
+                          <img
+                            src={companyLogo}
+                            alt="Company Logo Preview"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <Building2 aria-hidden="true" />
+                        )}
                       </div>
-                      <span className="settings-media-card-title">Company Logo</span>
+                      <span className="settings-media-card-title">
+                        Company Logo {isUploadingLogo && '(Uploading...)'}
+                      </span>
                       <span className="settings-media-card-specs">
-                        PNG or SVG, max 2MB
+                        PNG or SVG, max 5MB (Cloudinary)
                       </span>
                     </div>
 
                     {/* Favicon Card */}
                     <div
                       className="settings-upload-dropzone"
-                      onClick={() => faviconInputRef.current?.click()}
+                      onClick={() => !isUploadingFavicon && faviconInputRef.current?.click()}
                     >
                       <input
                         type="file"
                         ref={faviconInputRef}
                         style={{ display: 'none' }}
-                        accept="image/*"
+                        accept="image/*,.ico"
+                        onChange={handleUploadFavicon}
+                        disabled={isUploadingFavicon}
                       />
                       <div className="settings-favicon-preview-box">
-                        <Globe aria-hidden="true" />
+                        {isUploadingFavicon ? (
+                          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Uploading...</span>
+                        ) : companyFavicon ? (
+                          <img
+                            src={companyFavicon}
+                            alt="Favicon Preview"
+                            style={{ width: 32, height: 32, objectFit: 'contain' }}
+                          />
+                        ) : (
+                          <Globe aria-hidden="true" />
+                        )}
                       </div>
-                      <span className="settings-media-card-title">Favicon</span>
+                      <span className="settings-media-card-title">
+                        Favicon {isUploadingFavicon && '(Uploading...)'}
+                      </span>
                       <span className="settings-media-card-specs">
-                        32x32px ICO or PNG
+                        32x32px ICO or PNG (Cloudinary)
                       </span>
                     </div>
                   </div>
@@ -732,7 +786,7 @@ export default function GlobalSettingsPage({ onLogout, onNavigate }) {
                     onClick={handleAddSocialProfile}
                   >
                     <Plus aria-hidden="true" />
-                    <span>+ Add Social Profile</span>
+                    <span>Add Social Profile</span>
                   </button>
                 </section>
               )}
@@ -757,7 +811,7 @@ export default function GlobalSettingsPage({ onLogout, onNavigate }) {
                         onClick={handleOpenAddRecipient}
                       >
                         <Plus aria-hidden="true" />
-                        <span>+ Add Recipient</span>
+                        <span>Add Recipient</span>
                       </button>
                     </div>
 

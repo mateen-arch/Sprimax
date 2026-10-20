@@ -12,6 +12,7 @@ import sectorInfrastructure from '../assets/sector-infrastructure.png';
 import sectorManufacturing from '../assets/sector-manufacturing.png';
 import sectorOilGas from '../assets/sector-oil-gas.png';
 import noImagePlaceholder from '../assets/no-image-placeholder.png';
+import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 const LOCAL_ASSET_MAP = {
   'fabrication': sectorFabrication,
@@ -42,7 +43,7 @@ function resolveIndustryImage(industry) {
 
   // 1. Direct Web/Data URL
   if (img && (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:'))) {
-    return img;
+    return getOptimizedImageUrl(img, 'card');
   }
 
   // 2. Slug match against bundled high-res assets

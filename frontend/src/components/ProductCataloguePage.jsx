@@ -3,6 +3,7 @@ import { Search, ChevronUp, ChevronDown, Check, ArrowLeft, ArrowRight, X, Slider
 import noImagePlaceholder from '../assets/no-image-placeholder.png';
 import weldionBanner from '../assets/weldion-product-banner.png';
 import { getProducts, getCategories } from '../api/products.js';
+import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 export default function ProductCataloguePage({ 
   onBackToHome, 
@@ -702,9 +703,10 @@ export default function ProductCataloguePage({
                     {/* Product Image Area */}
                     <div className={`catalogue-img-box ${product.isPlaceholder ? 'catalogue-img-box-placeholder' : ''}`}>
                       <img 
-                        src={product.image} 
+                        src={getOptimizedImageUrl(product.image, 'card')} 
                         alt={product.title} 
                         className={`catalogue-card-img ${product.isPlaceholder ? 'img-placeholder' : ''}`}
+                        loading="lazy"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = noImagePlaceholder;

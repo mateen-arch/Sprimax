@@ -4,6 +4,7 @@ import noImagePlaceholder from '../assets/no-image-placeholder.png';
 import weldionBanner from '../assets/weldion-product-banner.png';
 import { getRelatedProducts, getProducts } from '../api/products.js';
 import { generateTdsPdf } from '../utils/generateTdsPdf.js';
+import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 export default function ProductDetailsPage({ 
   selectedProduct,
@@ -288,7 +289,7 @@ export default function ProductDetailsPage({
         {/* Main Product Hero Image */}
         <div className={`details-main-img-box ${isPlaceholder ? 'details-main-img-placeholder' : ''} ${uploadedImages.length <= 1 ? 'details-main-img-no-thumbs' : ''}`}>
           <img 
-            src={currentHeroImage} 
+            src={getOptimizedImageUrl(currentHeroImage, 'featured')} 
             alt={title} 
             className="details-hero-img"
             onError={(e) => {
@@ -310,7 +311,7 @@ export default function ProductDetailsPage({
                 aria-label={`Select product image view ${index + 1}`}
               >
                 <img 
-                  src={thumb} 
+                  src={getOptimizedImageUrl(thumb, 'thumbnail')} 
                   alt={`Thumbnail ${index + 1}`} 
                   className="details-thumb-img"
                   onError={(e) => {

@@ -155,6 +155,27 @@
   color: var(--deep-navy);
 }
 
+.navbar-search-clear-btn {
+  position: absolute;
+  right: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #7d8ea5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 50%;
+  transition: color 0.15s ease;
+}
+
+.navbar-search-clear-btn:hover {
+  color: var(--deep-navy);
+}
+
 /* SEND ENQUIRY Button (Safety Orange #FF0804) */
 .btn-send-enquiry {
   background-color: var(--safety-orange);
@@ -1359,6 +1380,121 @@
   font-family: var(--font-body);
   font-size: 13.5px;
   color: var(--deep-navy);
+}
+
+/* Application & Industry Accordion Card (Matches Attached Screenshot Design) */
+.industry-accordion-card {
+  border: 1px solid #dce4ec;
+  border-radius: 4px;
+  background: #ffffff;
+  overflow: hidden;
+  margin-top: 1.25rem;
+}
+
+.industry-accordion-header {
+  background: #f8fafc;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid #e2e8f0;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.industry-accordion-header:hover {
+  background: #f1f5f9;
+}
+
+.industry-accordion-title {
+  font-family: var(--font-headline, sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1e3a5f;
+  margin: 0;
+  line-height: 1;
+}
+
+.industry-accordion-list {
+  padding: 14px 8px 14px 14px;
+  max-height: 230px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.industry-accordion-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.industry-accordion-list::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.industry-accordion-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.industry-accordion-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.industry-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.industry-checkbox {
+  width: 17px;
+  height: 17px;
+  border: 1px solid #94a3b8;
+  border-radius: 3px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.industry-checkbox.checked {
+  background-color: var(--safety-orange);
+  border-color: var(--safety-orange);
+  color: var(--white);
+}
+
+.industry-item-text {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: #1e293b;
+}
+
+.industry-item-text.active {
+  font-weight: 600;
+  color: var(--deep-navy);
+}
+
+.industry-item-count {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #2b5079;
+  font-weight: 500;
+  flex-shrink: 0;
+  padding-right: 4px;
 }
 
 /* Right Section: Products Results Grid */

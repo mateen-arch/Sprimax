@@ -31,6 +31,10 @@
 
 /* Header */
 .settings-header-cluster {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
   margin-bottom: 24px;
 }
 
@@ -38,7 +42,7 @@
   margin: 0;
   color: var(--deep-navy, #212e68);
   font-family: var(--font-headline, "Hanken Grotesk", sans-serif);
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.02em;
@@ -49,7 +53,8 @@
   color: var(--steel-blue, #395f94);
   font-family: var(--font-body, "Inter", sans-serif);
   font-size: 15px;
-  line-height: 1.4;
+  max-width: 680px;
+  line-height: 1.5;
 }
 
 /* 2-Column Layout */

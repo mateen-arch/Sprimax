@@ -52,20 +52,21 @@
 }
 
 .enquiries-title {
-  margin: 0 0 6px;
-  color: #111827;
-  font-family: var(--font-headline);
-  font-size: 40px;
-  font-weight: 800;
-  line-height: 1.15;
+  margin: 0;
+  color: var(--deep-navy, #212e68);
+  font-family: var(--font-headline, 'Hanken Grotesk', sans-serif);
+  font-size: 30px;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .enquiries-subtitle {
-  margin: 0;
-  color: #64748b;
-  font-family: var(--font-body);
+  margin: 6px 0 0;
+  color: var(--steel-blue, #395f94);
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 15px;
+  max-width: 680px;
+  line-height: 1.5;
 }
 
 .enquiries-actions-group {
@@ -79,22 +80,23 @@
   align-items: center;
   gap: 8px;
   height: 42px;
-  padding: 0 18px;
-  border: 1px solid #cbd5e1;
+  padding: 0 16px;
+  border: 1px solid rgba(57, 95, 148, 0.25);
   border-radius: 6px;
   background: #ffffff;
-  color: #1e293b;
+  color: var(--steel-blue, #395f94);
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: all 120ms ease;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-download-report:hover {
-  border-color: #94a3b8;
-  background: #f8fafc;
+  background: #f1f5f9;
+  border-color: var(--steel-blue, #395f94);
 }
 
 .btn-add-manual {
@@ -103,21 +105,24 @@
   gap: 8px;
   height: 42px;
   padding: 0 20px;
-  border: 1px solid #111827;
+  border: none;
   border-radius: 6px;
-  background: #111827; /* Dark black button per screenshot */
+  background: #ff0804;
   color: #ffffff;
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--font-body, 'Inter', sans-serif);
   font-size: 14px;
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  transition: all 120ms ease;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(255, 8, 4, 0.25);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-add-manual:hover {
-  background: #1f2937;
-  border-color: #1f2937;
+  background: #e00602;
+  box-shadow: 0 4px 12px rgba(255, 8, 4, 0.35);
   transform: translateY(-1px);
 }
 

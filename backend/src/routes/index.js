@@ -11,6 +11,8 @@ import projectRequirementRoutes from './projectRequirementRoutes.js';
 import uploadRoutes from './uploadRoutes.js';
 import certificationRoutes from './certificationRoutes.js';
 import supportTicketRoutes from './supportTicketRoutes.js';
+import blogRoutes from './blogRoutes.js';
+import careerRoutes from './careerRoutes.js';
 
 const router = express.Router();
 
@@ -26,5 +28,7 @@ router.use('/project-requirements', projectRequirementRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/certifications', certificationRoutes);
 router.use('/support-tickets', supportTicketRoutes);
+router.use('/blogs', blogRoutes);
+router.use('/careers', careerRoutes);
 
 export default router;

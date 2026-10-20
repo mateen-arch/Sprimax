@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar.jsx';
 import AdminTopbar from './AdminTopbar.jsx';
+import { uploadImageApi } from './api/upload.js';
 import './AdminProfilePage.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -129,8 +130,8 @@ export default function AdminProfilePage({ onLogout, onNavigate }) {
       .catch((err) => console.warn('Using cached admin profile:', err));
   }, []);
 
-  // Handle avatar upload
-  const handleAvatarFile = (e) => {
+  // Handle avatar upload via Cloudinary
+  const handleAvatarFile = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -139,15 +140,16 @@ export default function AdminProfilePage({ onLogout, onNavigate }) {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result;
-      const updated = { ...profile, avatar: base64 };
+    try {
+      showToast('Uploading profile photo to Cloudinary...');
+      const data = await uploadImageApi(file, { folder: 'sprimax/admin/avatars' });
+      const updated = { ...profile, avatar: data.secure_url };
       setProfile(updated);
       persistProfile(updated, 'Updated profile photo');
       showToast('Profile photo updated.');
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      showToast(err.message || 'Failed to upload photo', 'error');
+    }
   };
 
   const handleRemoveAvatar = () => {

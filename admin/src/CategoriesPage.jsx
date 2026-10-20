@@ -33,8 +33,6 @@ export default function CategoriesPage({
   const [globalSearch, setGlobalSearch] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const fileInputRef = useRef(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,6 +95,29 @@ export default function CategoriesPage({
 
   // Edit category form state
   const [editCatData, setEditCatData] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleImageFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const data = await uploadImageApi(file, 'sprimax/categories');
+      const url = data.secure_url || data.url;
+      setNewCatData((prev) => ({ ...prev, image: url }));
+      if (editCatData) {
+        setEditCatData((prev) => ({ ...prev, image: url }));
+      }
+      showToast('Category image uploaded to Cloudinary.');
+    } catch (err) {
+      showToast(err.message || 'Image upload failed.');
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -128,28 +149,6 @@ export default function CategoriesPage({
     return filteredCategories.slice(startIndex, startIndex + pageSize);
   }, [filteredCategories, activePage, pageSize]);
 
-  // Handle image upload from computer
-  const handleImageFileChange = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploadingImage(true);
-      const res = await uploadImageApi(file);
-      if (res && res.url) {
-        setNewCatData((prev) => ({ ...prev, image: res.url }));
-        showToast('Image uploaded successfully.');
-      }
-    } catch (err) {
-      console.error('Image upload failed:', err);
-      showToast('Failed to upload image. Please try again.');
-    } finally {
-      setUploadingImage(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
 
   // Handle Add Category submit
   const handleAddCategorySubmit = async (e) => {

@@ -1,20 +1,35 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, X, ArrowLeft, FileText, Check, ArrowRight, Download, BadgeCheck } from 'lucide-react';
+import { Search, X, ArrowLeft, FileText, Check, ArrowRight, Download, BadgeCheck, ChevronUp, ChevronDown } from 'lucide-react';
 import { getProducts, getCategories } from '../api/products.js';
 import { getDownloads, trackDownload } from '../api/resources.js';
 import noImagePlaceholder from '../assets/no-image-placeholder.png';
 import weldionBanner from '../assets/weldion-product-banner.png';
+import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 export default function SearchProductsPage({ 
   onBackToHome, 
-  initialQuery = 'Electrodes',
+  initialQuery = '',
+  searchQuery: externalSearchQuery,
+  onSearchChange: externalOnSearchChange,
+  activeFilters = null,
+  onClearActiveFilters,
   initialTab = 'products',
   onTabChange,
   onSelectGuide,
   onSendEnquiry,
   onViewProductDetails,
 }) {
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [internalSearchQuery, setInternalSearchQuery] = useState(initialQuery);
+  const isControlled = externalSearchQuery !== undefined;
+  const searchQuery = isControlled ? externalSearchQuery : internalSearchQuery;
+  const setSearchQuery = (val) => {
+    if (isControlled && externalOnSearchChange) {
+      externalOnSearchChange(val);
+    } else {
+      setInternalSearchQuery(val);
+    }
+  };
+
   const [activeTab, setActiveTab] = useState(initialTab || 'products');
   const [selectedGuideModal, setSelectedGuideModal] = useState(null);
   const [downloadToast, setDownloadToast] = useState(null);
@@ -24,10 +39,22 @@ export default function SearchProductsPage({
   const [downloadsList, setDownloadsList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Dynamic Filters State (all start completely UNSELECTED per user requirement)
-  const [selectedAws, setSelectedAws] = useState([]);
-  const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  // Dynamic Filters State
+  const [selectedAws, setSelectedAws] = useState(activeFilters?.aws || []);
+  const [selectedMaterials, setSelectedMaterials] = useState(activeFilters?.materials || []);
+  const [selectedCategories, setSelectedCategories] = useState(activeFilters?.categories || []);
+  const [selectedIndustries, setSelectedIndustries] = useState(activeFilters?.industries || []);
+  const [industryAccordionOpen, setIndustryAccordionOpen] = useState(true);
+
+  // Sync if activeFilters prop changes from parent (e.g. HeroSection submission)
+  useEffect(() => {
+    if (activeFilters) {
+      setSelectedAws(Array.isArray(activeFilters.aws) ? activeFilters.aws : []);
+      setSelectedMaterials(Array.isArray(activeFilters.materials) ? activeFilters.materials : []);
+      setSelectedCategories(Array.isArray(activeFilters.categories) ? activeFilters.categories : []);
+      setSelectedIndustries(Array.isArray(activeFilters.industries) ? activeFilters.industries : []);
+    }
+  }, [activeFilters]);
 
   // Sync if initialTab prop changes
   useEffect(() => {
@@ -37,13 +64,14 @@ export default function SearchProductsPage({
   }, [initialTab]);
 
   useEffect(() => {
-    if (initialQuery !== undefined) {
-      setSearchQuery(initialQuery);
+    if (!isControlled && initialQuery !== undefined) {
+      setInternalSearchQuery(initialQuery);
       setSelectedAws([]);
       setSelectedMaterials([]);
       setSelectedCategories([]);
+      setSelectedIndustries([]);
     }
-  }, [initialQuery]);
+  }, [initialQuery, isControlled]);
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
@@ -182,6 +210,23 @@ export default function SearchProductsPage({
     return Object.entries(counts).map(([name, count]) => ({ name, count }));
   }, [productsList]);
 
+  // Extract dynamic Industries / Applications from DB products
+  const availableIndustriesList = useMemo(() => {
+    const counts = {};
+    productsList.forEach((p) => {
+      if (Array.isArray(p.industries)) {
+        p.industries.forEach((ind) => {
+          if (ind) {
+            counts[ind] = (counts[ind] || 0) + 1;
+          }
+        });
+      }
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [productsList]);
+
   // Filter handlers
   const handleAwsToggle = (awsVal) => {
     setSelectedAws((prev) =>
@@ -201,10 +246,20 @@ export default function SearchProductsPage({
     );
   };
 
+  const handleIndustryToggle = (indVal) => {
+    setSelectedIndustries((prev) =>
+      prev.includes(indVal) ? prev.filter((i) => i !== indVal) : [...prev, indVal]
+    );
+  };
+
   const handleClearFilters = () => {
     setSelectedAws([]);
     setSelectedMaterials([]);
     setSelectedCategories([]);
+    setSelectedIndustries([]);
+    if (onClearActiveFilters) {
+      onClearActiveFilters();
+    }
   };
 
   // Technical Guides (curated engineering repository)
@@ -317,9 +372,16 @@ export default function SearchProductsPage({
         if (!selectedCategories.includes(product.category)) return false;
       }
 
+      // 5. Application & Industry Filter
+      if (selectedIndustries.length > 0) {
+        const productInds = Array.isArray(product.industries) ? product.industries : [];
+        const hasMatch = selectedIndustries.some((ind) => productInds.includes(ind));
+        if (!hasMatch) return false;
+      }
+
       return true;
     });
-  }, [productsList, searchQuery, selectedAws, selectedMaterials, selectedCategories]);
+  }, [productsList, searchQuery, selectedAws, selectedMaterials, selectedCategories, selectedIndustries]);
 
   // Real-time filtered downloads
   const filteredDownloads = useMemo(() => {
@@ -425,7 +487,11 @@ export default function SearchProductsPage({
     }
   };
 
-  const hasActiveFilters = selectedAws.length > 0 || selectedMaterials.length > 0 || selectedCategories.length > 0;
+  const hasActiveFilters =
+    selectedAws.length > 0 ||
+    selectedMaterials.length > 0 ||
+    selectedCategories.length > 0 ||
+    selectedIndustries.length > 0;
 
   return (
     <div className="search-page-wrapper">
@@ -473,7 +539,7 @@ export default function SearchProductsPage({
 
           <div className="search-results-count-box">
             <span className="results-count-number">{totalResultsCount} Results</span>
-            <span className="results-count-query">for &quot;{searchQuery || 'All Consumables'}&quot;</span>
+            <span className="results-count-query">for &quot;{searchQuery || (hasActiveFilters ? 'Selected Filters' : 'All Consumables')}&quot;</span>
           </div>
         </div>
 
@@ -555,11 +621,12 @@ export default function SearchProductsPage({
                     {availableAwsList.map(({ name, count }) => {
                       const isChecked = selectedAws.includes(name);
                       return (
-                        <label key={name} className="filter-checkbox-label">
-                          <span 
-                            className={`custom-checkbox ${isChecked ? 'checked' : ''}`}
-                            onClick={() => handleAwsToggle(name)}
-                          >
+                        <label 
+                          key={name} 
+                          className="filter-checkbox-label"
+                          onClick={() => handleAwsToggle(name)}
+                        >
+                          <span className={`custom-checkbox ${isChecked ? 'checked' : ''}`}>
                             {isChecked && <Check size={12} strokeWidth={3} />}
                           </span>
                           <span className="checkbox-text">
@@ -580,11 +647,12 @@ export default function SearchProductsPage({
                     {availableMaterialsList.map(({ name, count }) => {
                       const isChecked = selectedMaterials.includes(name);
                       return (
-                        <label key={name} className="filter-checkbox-label">
-                          <span 
-                            className={`custom-checkbox ${isChecked ? 'checked' : ''}`}
-                            onClick={() => handleMaterialToggle(name)}
-                          >
+                        <label 
+                          key={name} 
+                          className="filter-checkbox-label"
+                          onClick={() => handleMaterialToggle(name)}
+                        >
+                          <span className={`custom-checkbox ${isChecked ? 'checked' : ''}`}>
                             {isChecked && <Check size={12} strokeWidth={3} />}
                           </span>
                           <span className="checkbox-text">
@@ -605,11 +673,12 @@ export default function SearchProductsPage({
                     {availableCategoriesList.map(({ name, count }) => {
                       const isChecked = selectedCategories.includes(name);
                       return (
-                        <label key={name} className="filter-checkbox-label">
-                          <span 
-                            className={`custom-checkbox ${isChecked ? 'checked' : ''}`}
-                            onClick={() => handleCategoryToggle(name)}
-                          >
+                        <label 
+                          key={name} 
+                          className="filter-checkbox-label"
+                          onClick={() => handleCategoryToggle(name)}
+                        >
+                          <span className={`custom-checkbox ${isChecked ? 'checked' : ''}`}>
                             {isChecked && <Check size={12} strokeWidth={3} />}
                           </span>
                           <span className="checkbox-text">
@@ -619,6 +688,55 @@ export default function SearchProductsPage({
                       );
                     })}
                   </div>
+                </div>
+              )}
+
+              {/* Dynamic Filter Group: Application & Industry (Per User Screenshot) */}
+              {availableIndustriesList.length > 0 && (
+                <div className="industry-accordion-card">
+                  <div
+                    className="industry-accordion-header"
+                    onClick={() => setIndustryAccordionOpen(!industryAccordionOpen)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={industryAccordionOpen}
+                  >
+                    <span className="industry-accordion-title">
+                      APPLICATION & INDUSTRY
+                    </span>
+                    {industryAccordionOpen ? (
+                      <ChevronUp size={16} color="#1e293b" />
+                    ) : (
+                      <ChevronDown size={16} color="#1e293b" />
+                    )}
+                  </div>
+
+                  {industryAccordionOpen && (
+                    <div className="industry-accordion-list">
+                      {availableIndustriesList.map(({ name, count }) => {
+                        const isChecked = selectedIndustries.includes(name);
+                        return (
+                          <div 
+                            key={name} 
+                            className="industry-accordion-item"
+                            onClick={() => handleIndustryToggle(name)}
+                          >
+                            <div className="industry-item-left">
+                              <span className={`industry-checkbox ${isChecked ? 'checked' : ''}`}>
+                                {isChecked && <Check size={12} strokeWidth={3} />}
+                              </span>
+                              <span className={`industry-item-text ${isChecked ? 'active' : ''}`}>
+                                {name}
+                              </span>
+                            </div>
+                            <span className="industry-item-count data-tabular">
+                              ({count})
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -658,9 +776,10 @@ export default function SearchProductsPage({
                       {/* Product Image Box with Error Fallback */}
                       <div className={`catalogue-img-box ${product.isPlaceholder ? 'catalogue-img-box-placeholder' : ''}`}>
                         <img 
-                          src={product.image} 
+                          src={getOptimizedImageUrl(product.image, 'card')} 
                           alt={product.title} 
                           className={`catalogue-card-img ${product.isPlaceholder ? 'img-placeholder' : ''}`}
+                          loading="lazy"
                           onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = noImagePlaceholder;

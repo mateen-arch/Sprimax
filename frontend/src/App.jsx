@@ -18,6 +18,9 @@ import TermsAndConditionsPage from './components/TermsAndConditionsPage';
 import FaqPage from './components/FaqPage';
 import SitemapPage from './components/SitemapPage';
 import IsoCertificationsPage from './components/IsoCertificationsPage';
+import BlogPage from './components/BlogPage';
+import CareersPage from './components/CareersPage';
+import VerifyReceiptPage from './components/VerifyReceiptPage';
 import ComingSoonPage from './components/ComingSoonPage';
 import FooterSection from './components/FooterSection';
 import productLh7018 from './assets/product-lh7018.png';
@@ -48,8 +51,9 @@ function getInitialPageFromUrl() {
   if (['faq', 'faqs', 'help'].includes(candidate)) return 'faq';
   if (['sitemap'].includes(candidate)) return 'sitemap';
   if (['iso', 'iso-certifications', 'certifications', 'quality'].includes(candidate)) return 'iso';
+  if (candidate.includes('verify-receipt') || candidate === 'verify') return 'verify-receipt';
   if (['careers', 'career', 'jobs'].includes(candidate)) return 'careers';
-  if (['blog', 'news', 'insights'].includes(candidate)) return 'blog';
+  if (candidate.startsWith('blog') || ['blog', 'news', 'insights'].includes(candidate)) return 'blog';
   if (['search'].includes(candidate)) return 'search';
   if (['send-enquiry', 'enquiry'].includes(candidate)) return 'send-enquiry';
 
@@ -65,8 +69,11 @@ export default function App() {
   const [selectedIndustrySlug, setSelectedIndustrySlug] = useState('heavy-engineering');
   const [selectedIndustryForRequirements, setSelectedIndustryForRequirements] = useState(null);
   const [technicalDocsQuery, setTechnicalDocsQuery] = useState('');
-  const [searchQuery, setSearchQuery] = useState('Electrodes');
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchTab, setSearchTab] = useState('products');
+  const [activeSearchFilters, setActiveSearchFilters] = useState(null);
+  const [selectedBlogArticle, setSelectedBlogArticle] = useState(null);
+  const [selectedCareerRole, setSelectedCareerRole] = useState(null);
   const [enquiryKey, setEnquiryKey] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -126,11 +133,31 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSearchFocus = () => {
+    setShowSuccessModal(false);
+    if (currentPage !== 'search') {
+      setCurrentPage('search');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleSearchChange = (query) => {
+    setShowSuccessModal(false);
+    setSearchQuery(query);
+    if (currentPage !== 'search') {
+      setCurrentPage('search');
+    }
+  };
+
   const handleSearchSubmit = (query) => {
     setShowSuccessModal(false);
-    setSearchQuery(query || 'Electrodes');
-    setCurrentPage('search');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (query !== undefined) {
+      setSearchQuery(query);
+    }
+    if (currentPage !== 'search') {
+      setCurrentPage('search');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleExploreProducts = () => {
@@ -143,16 +170,26 @@ export default function App() {
 
   const handleSearchCatalog = (filters) => {
     setShowSuccessModal(false);
-    let query = '';
+    setSearchQuery(''); // Do not search it in the search bar
+
+    const parsedFilters = {
+      aws: [],
+      materials: [],
+      industries: [],
+      categories: [],
+    };
+
     if (filters) {
       if (typeof filters === 'string') {
-        query = filters.trim();
+        parsedFilters.industries = [filters.trim()];
       } else {
-        const parts = [filters.productSku, filters.baseMaterial, filters.industry].filter(Boolean);
-        query = parts.join(' ').trim();
+        if (filters.productSku) parsedFilters.aws = [filters.productSku];
+        if (filters.baseMaterial) parsedFilters.materials = [filters.baseMaterial];
+        if (filters.industry) parsedFilters.industries = [filters.industry];
       }
     }
-    setSearchQuery(query);
+
+    setActiveSearchFilters(parsedFilters);
     setSearchTab('products');
     setCurrentPage('search');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -230,6 +267,9 @@ export default function App() {
         }
         setCurrentSection={handleNavClick}
         onSendEnquiry={handleSendEnquiry}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        onSearchFocus={handleSearchFocus}
         onSearchSubmit={handleSearchSubmit}
       />
 
@@ -415,36 +455,49 @@ export default function App() {
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />
+        ) : currentPage === 'verify-receipt' ? (
+          <VerifyReceiptPage
+            onBackToCareers={() => {
+              setCurrentPage('careers');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
         ) : currentPage === 'careers' ? (
-          <ComingSoonPage
-            pageName="Careers"
-            onBack={() => {
+          <CareersPage
+            initialRoleSlug={selectedCareerRole}
+            onBackToHome={() => {
               setCurrentPage('home');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onNavigateToContact={() => {
+            onNavigateContact={() => {
               setCurrentPage('contact');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />
         ) : currentPage === 'blog' ? (
-          <ComingSoonPage
-            pageName="Blog"
-            onBack={() => {
+          <BlogPage
+            initialArticleSlug={selectedBlogArticle}
+            onBackToHome={() => {
               setCurrentPage('home');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            onNavigateToContact={() => {
+            onSendEnquiry={handleSendEnquiry}
+            onViewProductDetails={handleViewProductDetails}
+            onNavigateContact={() => {
               setCurrentPage('contact');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           />
         ) : (
           <SearchProductsPage 
-            initialQuery={searchQuery}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            activeFilters={activeSearchFilters}
+            onClearActiveFilters={() => setActiveSearchFilters(null)}
             initialTab={searchTab}
             onTabChange={(tab) => setSearchTab(tab)}
             onBackToHome={() => {
+              setActiveSearchFilters(null);
               setCurrentPage('home');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}

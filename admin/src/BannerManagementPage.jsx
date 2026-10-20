@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import AdminSidebar from './AdminSidebar.jsx';
 import AdminTopbar from './AdminTopbar.jsx';
+import ImageUploader from './components/ImageUploader.jsx';
 import './BannerManagementPage.css';
 
 const INITIAL_BANNERS = [
@@ -672,135 +673,33 @@ export default function BannerManagementPage({ onLogout, onNavigate }) {
                   </div>
 
                   {/* Desktop Image Block */}
-                  <div className="media-asset-item">
-                    <div className="media-asset-label-row">
-                      <span className="media-asset-label">Desktop Image</span>
-                      <span className="media-asset-specs-hint">
-                        (16:9 ratio, min 1920x1080px)
-                      </span>
-                    </div>
-
-                    <div className="media-asset-content-row">
-                      <div className="media-desktop-thumb-box">
-                        {formDesktopImage ? (
-                          <img
-                            src={formDesktopImage}
-                            alt="Desktop preview"
-                          />
-                        ) : (
-                          <div className="thumb-preview-empty">
-                            <ImageIcon aria-hidden="true" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="media-asset-inputs-col">
-                        <div>
-                          <div className="media-alt-text-label">Alt Text</div>
-                          <input
-                            type="text"
-                            className="banner-input-text"
-                            placeholder="Alt text description"
-                            value={formDesktopAlt}
-                            onChange={(e) => setFormDesktopAlt(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="media-action-buttons-row">
-                          <input
-                            type="file"
-                            ref={desktopFileInputRef}
-                            style={{ display: 'none' }}
-                            accept="image/*"
-                            onChange={handleUploadDesktop}
-                          />
-                          <button
-                            type="button"
-                            className="btn-replace-media"
-                            onClick={() =>
-                              desktopFileInputRef.current?.click()
-                            }
-                          >
-                            Replace
-                          </button>
-                          {formDesktopImage && (
-                            <button
-                              type="button"
-                              className="btn-remove-media"
-                              onClick={() => setFormDesktopImage(null)}
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="media-asset-item" style={{ marginBottom: '1.25rem' }}>
+                    <ImageUploader
+                      label="Desktop Image (Cloudinary)"
+                      helpText="(16:9 ratio, min 1920x1080px, max 5MB)"
+                      value={formDesktopImage}
+                      onChange={setFormDesktopImage}
+                      altText={formDesktopAlt}
+                      onAltChange={setFormDesktopAlt}
+                      showAltInput={true}
+                      folder="sprimax/banners"
+                    />
                   </div>
 
-                  <div className="media-asset-divider" />
+                  <div className="media-asset-divider" style={{ margin: '1rem 0' }} />
 
                   {/* Mobile Image Block */}
                   <div className="media-asset-item">
-                    <div className="media-asset-label-row">
-                      <span className="media-asset-label">Mobile Image</span>
-                      <span className="media-asset-specs-hint">
-                        (9:16 ratio, min 1080x1920px)
-                      </span>
-                    </div>
-
-                    <div className="media-asset-content-row">
-                      <div className="media-mobile-thumb-box">
-                        {formMobileImage ? (
-                          <img
-                            src={formMobileImage}
-                            alt="Mobile preview"
-                          />
-                        ) : (
-                          <div className="thumb-preview-empty">
-                            <ImageIcon aria-hidden="true" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="media-asset-inputs-col">
-                        <div>
-                          <div className="media-alt-text-label">Alt Text</div>
-                          <input
-                            type="text"
-                            className="banner-input-text"
-                            placeholder="Close up of welding arc"
-                            value={formMobileAlt}
-                            onChange={(e) => setFormMobileAlt(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="media-action-buttons-row">
-                          <input
-                            type="file"
-                            ref={mobileFileInputRef}
-                            style={{ display: 'none' }}
-                            accept="image/*"
-                            onChange={handleUploadMobile}
-                          />
-                          <button
-                            type="button"
-                            className="btn-replace-media"
-                            onClick={() => mobileFileInputRef.current?.click()}
-                          >
-                            Replace
-                          </button>
-                          {formMobileImage && (
-                            <button
-                              type="button"
-                              className="btn-remove-media"
-                              onClick={() => setFormMobileImage(null)}
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <ImageUploader
+                      label="Mobile Image (Cloudinary)"
+                      helpText="(9:16 ratio, min 1080x1920px, max 5MB)"
+                      value={formMobileImage}
+                      onChange={setFormMobileImage}
+                      altText={formMobileAlt}
+                      onAltChange={setFormMobileAlt}
+                      showAltInput={true}
+                      folder="sprimax/banners"
+                    />
                   </div>
                 </div>
 

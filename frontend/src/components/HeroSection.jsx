@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import heroBg from '../assets/hero-bg.png';
 import { getHeroBanner, getDiscoveryFilters } from '../api/home.js';
+import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 export default function HeroSection({ onExploreProducts, onSendEnquiry, onSearchCatalog }) {
   const [productSku, setProductSku] = useState('');
@@ -72,7 +73,7 @@ export default function HeroSection({ onExploreProducts, onSendEnquiry, onSearch
       <div className="hero-banner">
         <div className="hero-bg-layer" aria-hidden="true">
           <img 
-            src={banner.desktopImage || heroBg} 
+            src={getOptimizedImageUrl(banner.desktopImage || heroBg, 'banner')} 
             alt={banner.desktopAlt || "Industrial Welding Automation"} 
             className="hero-bg-img" 
           />
