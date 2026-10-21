@@ -41,32 +41,22 @@ function resolveIndustryImage(industry) {
   if (!industry) return noImagePlaceholder;
   const img = industry.image;
 
-  // 1. Direct Web/Data URL
-  if (img && (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:'))) {
-    return getOptimizedImageUrl(img, 'card');
+  // 1. Prioritize image fed from admin database (Cloudinary, HTTPS/HTTP, or uploaded URL)
+  if (img && typeof img === 'string' && img.trim() !== '') {
+    const trimmed = img.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+      return getOptimizedImageUrl(trimmed, 'card');
+    }
+    return trimmed;
   }
 
-  // 2. Slug match against bundled high-res assets
+  // 2. Fallback to bundled asset only if no image was provided in admin panel
   const slug = (industry.slug || '').toLowerCase().trim();
   if (LOCAL_ASSET_MAP[slug]) {
     return LOCAL_ASSET_MAP[slug];
   }
 
-  // 3. Clean filename match
-  if (img) {
-    const clean = img.replace(/^\//, '').replace(/\.(png|jpg|jpeg|webp)$/i, '').toLowerCase();
-    if (LOCAL_ASSET_MAP[clean]) {
-      return LOCAL_ASSET_MAP[clean];
-    }
-    // Partial search inside filename
-    for (const [key, asset] of Object.entries(LOCAL_ASSET_MAP)) {
-      if (clean.includes(key)) {
-        return asset;
-      }
-    }
-  }
-
-  return img || noImagePlaceholder;
+  return noImagePlaceholder;
 }
 
 export default function CompanyPage({ onViewSolutions }) {

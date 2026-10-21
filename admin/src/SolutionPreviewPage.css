@@ -1,0 +1,267 @@
+/* ==========================================================================
+   SPRIMAX ADMIN - SOLUTIONS PREVIEW STYLES (MATCHING BLOG PREVIEW EXACTLY)
+   ========================================================================== */
+
+.sol-preview-container,
+.blog-preview-container {
+  min-height: 100vh;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.preview-loading-screen,
+.preview-error-screen,
+.sol-preview-loading,
+.sol-preview-error {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  gap: 16px;
+  text-align: center;
+  background: #0f172a;
+  height: 100vh;
+}
+
+.preview-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #ff0804;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-preview-back {
+  padding: 8px 18px;
+  background: #ff0804;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 0.15s ease;
+}
+
+.btn-preview-back:hover {
+  background: #d90602;
+}
+
+/* 1. Top Toolbar (Matching Blog Preview Page) */
+.preview-top-toolbar,
+.sol-preview-top-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  color: #ffffff;
+  z-index: 100;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+.toolbar-left,
+.preview-toolbar-left,
+.toolbar-right,
+.preview-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-exit-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.btn-exit-preview:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.preview-mode-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 8, 4, 0.15);
+  color: #ff0804;
+  border: 1px solid rgba(255, 8, 4, 0.35);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* 2. Center Viewport Switchers */
+.toolbar-center,
+.preview-toolbar-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.viewport-toggle-group {
+  display: flex;
+  background: #0f172a;
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  gap: 2px;
+}
+
+.btn-viewport {
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.12s ease;
+}
+
+.btn-viewport:hover:not(.active) {
+  color: #ffffff;
+}
+
+.btn-viewport.active {
+  background: #ff0804;
+  color: #ffffff;
+}
+
+/* 3. Right Toolbar Items */
+.slug-display,
+.slug-preview-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.slug-display strong,
+.slug-preview-tag strong {
+  color: #ffffff;
+}
+
+.btn-preview-publish {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ff0804;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-preview-publish:hover {
+  background: #d90602;
+}
+
+.live-published-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.publish-success-flash {
+  font-size: 12px;
+  font-weight: 700;
+  color: #22c55e;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 4. Viewport Frame Wrapper */
+.preview-viewport-outer,
+.sol-preview-viewport-outer {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  background: #0f172a;
+}
+
+.preview-viewport-frame,
+.sol-preview-viewport-frame {
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: width 0.25s ease;
+  min-height: 80vh;
+  height: fit-content;
+}
+
+.preview-viewport-frame.frame-desktop,
+.sol-preview-viewport-frame.frame-desktop {
+  width: 100%;
+  max-width: 1360px;
+}
+
+.preview-viewport-frame.frame-tablet,
+.sol-preview-viewport-frame.frame-tablet {
+  width: 768px;
+  max-width: 100%;
+  border: 8px solid #1e293b;
+  border-radius: 12px;
+}
+
+.preview-viewport-frame.frame-mobile,
+.sol-preview-viewport-frame.frame-mobile {
+  width: 375px;
+  max-width: 100%;
+  border: 10px solid #1e293b;
+  border-radius: 18px;
+}

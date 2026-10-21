@@ -1,9 +1,23 @@
 import { v2 as cloudinary } from 'cloudinary';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Ensure environment variables are loaded
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config();
 
 /**
  * Check if all required Cloudinary environment variables are set
  */
 export const isCloudinaryConfigured = () => {
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+    dotenv.config();
+  }
   return Boolean(
     process.env.CLOUDINARY_CLOUD_NAME &&
     process.env.CLOUDINARY_API_KEY &&

@@ -11,11 +11,20 @@ import { notFound, errorHandler } from './middleware/errorHandler.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
+// Load environment variables reliably from backend/.env or cwd
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 // Connect to MongoDB
 connectDB();
+
+// Verify Cloudinary status on startup
+import { isCloudinaryConfigured } from './config/cloudinary.js';
+if (isCloudinaryConfigured()) {
+  console.log('[Cloudinary] Configured successfully for cloud:', process.env.CLOUDINARY_CLOUD_NAME);
+} else {
+  console.warn('[Cloudinary] WARNING: Cloudinary credentials missing in .env');
+}
 
 const app = express();
 

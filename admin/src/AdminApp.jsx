@@ -24,6 +24,9 @@ import CareersJobEditorPage from './CareersJobEditorPage.jsx';
 import CareersJobPreviewPage from './CareersJobPreviewPage.jsx';
 import CareersApplicationsPage from './CareersApplicationsPage.jsx';
 import CareersSettingsModal from './CareersSettingsModal.jsx';
+import SolutionsManagementPage from './SolutionsManagementPage.jsx';
+import SolutionEditorPage from './SolutionEditorPage.jsx';
+import SolutionPreviewPage from './SolutionPreviewPage.jsx';
 import AdminSidebar from './AdminSidebar.jsx';
 import AdminTopbar from './AdminTopbar.jsx';
 
@@ -34,6 +37,7 @@ export default function AdminApp() {
   const [activeEnquiryType, setActiveEnquiryType] = useState('Product Enquiries');
   const [selectedBlogId, setSelectedBlogId] = useState(null);
   const [selectedCareersJobId, setSelectedCareersJobId] = useState(null);
+  const [selectedSolutionId, setSelectedSolutionId] = useState(null);
   const [careersSettingsOpen, setCareersSettingsOpen] = useState(false);
   const [careersAppJobFilter, setCareersAppJobFilter] = useState({ id: null, title: null });
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,6 +56,11 @@ export default function AdminApp() {
     if (path.includes('careers/jobs') && path.includes('edit')) return 'EditCareersJob';
     if (path.includes('careers/jobs')) return 'CareersJobs';
     if (path.includes('careers/applications')) return 'CareersApplications';
+    if (path.includes('industries/new') || path.includes('solutions/new')) return 'AddSolution';
+    if ((path.includes('industries') || path.includes('solutions')) && path.includes('preview')) return 'PreviewSolution';
+    if ((path.includes('industries') || path.includes('solutions')) && path.includes('edit')) return 'EditSolution';
+    if (path.includes('industries')) return 'Industries Management';
+    if (path.includes('solutions')) return 'Industries Management';
     return 'Dashboard';
   });
 
@@ -71,11 +80,15 @@ export default function AdminApp() {
     else if (currentPage === 'EditCareersJob' && selectedCareersJobId) route = `/admin/careers/jobs/${selectedCareersJobId}/edit`;
     else if (currentPage === 'PreviewCareersJob' && selectedCareersJobId) route = `/admin/careers/jobs/${selectedCareersJobId}/preview`;
     else if (currentPage === 'CareersApplications') route = '/admin/careers/applications';
+    else if (currentPage === 'Industries Management') route = '/admin/industries';
+    else if (currentPage === 'AddSolution') route = '/admin/industries/new';
+    else if (currentPage === 'EditSolution' && selectedSolutionId) route = `/admin/industries/${selectedSolutionId}/edit`;
+    else if (currentPage === 'PreviewSolution' && selectedSolutionId) route = `/admin/industries/${selectedSolutionId}/preview`;
     
     if (window.location.pathname !== route) {
-      window.history.pushState({ page: currentPage, blogId: selectedBlogId, jobId: selectedCareersJobId }, '', route);
+      window.history.pushState({ page: currentPage, blogId: selectedBlogId, jobId: selectedCareersJobId, solutionId: selectedSolutionId }, '', route);
     }
-  }, [currentPage, selectedBlogId, selectedCareersJobId]);
+  }, [currentPage, selectedBlogId, selectedCareersJobId, selectedSolutionId]);
 
   if (!signedIn) {
     return (
@@ -194,6 +207,14 @@ export default function AdminApp() {
       <IndustriesManagementPage
         onLogout={() => setSignedIn(false)}
         onNavigate={(page) => setCurrentPage(page)}
+        onEditIndustrySolution={(id) => {
+          setSelectedSolutionId(id);
+          setCurrentPage(id ? 'EditSolution' : 'AddSolution');
+        }}
+        onPreviewIndustrySolution={(id) => {
+          setSelectedSolutionId(id);
+          setCurrentPage('PreviewSolution');
+        }}
       />
     );
   }
@@ -332,6 +353,86 @@ export default function AdminApp() {
       <BlogPreviewPage
         blogId={selectedBlogId}
         onBackToEditor={() => setCurrentPage(selectedBlogId ? 'EditBlog' : 'Blogs')}
+      />
+    );
+  }
+
+  /* ========================================================================
+     SOLUTIONS MANAGEMENT MODULE
+     ======================================================================== */
+
+  if (currentPage === 'Solutions') {
+    return (
+      <IndustriesManagementPage
+        onLogout={() => setSignedIn(false)}
+        onNavigate={(page) => setCurrentPage(page)}
+        onEditIndustrySolution={(id) => {
+          setSelectedSolutionId(id);
+          setCurrentPage(id ? 'EditSolution' : 'AddSolution');
+        }}
+        onPreviewIndustrySolution={(id) => {
+          setSelectedSolutionId(id);
+          setCurrentPage('PreviewSolution');
+        }}
+      />
+    );
+  }
+
+  if (currentPage === 'AddSolution') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="Industries Management"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <SolutionEditorPage
+            solutionId={null}
+            onBack={() => setCurrentPage('Industries Management')}
+            onNavigate={(page) => setCurrentPage(page)}
+            onPreview={(id) => {
+              setSelectedSolutionId(id);
+              setCurrentPage('PreviewSolution');
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === 'EditSolution') {
+    return (
+      <div className="admin-shell">
+        <AdminSidebar
+          currentNav="Industries Management"
+          onLogout={() => setSignedIn(false)}
+          onNavigate={(page) => setCurrentPage(page)}
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+        />
+        <div className="admin-main">
+          <SolutionEditorPage
+            solutionId={selectedSolutionId}
+            onBack={() => setCurrentPage('Industries Management')}
+            onNavigate={(page) => setCurrentPage(page)}
+            onPreview={(id) => {
+              setSelectedSolutionId(id);
+              setCurrentPage('PreviewSolution');
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === 'PreviewSolution') {
+    return (
+      <SolutionPreviewPage
+        solutionId={selectedSolutionId}
+        onBackToEditor={() => setCurrentPage(selectedSolutionId ? 'EditSolution' : 'Industries Management')}
       />
     );
   }

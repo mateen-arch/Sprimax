@@ -13,6 +13,7 @@ import {
   Settings,
   BookOpen,
   Briefcase,
+  Layers,
 } from 'lucide-react';
 import './AdminSidebar.css';
 
@@ -45,6 +46,8 @@ export default function AdminSidebar({
     'Certifications Management',
     'Industries Management',
     'Banner Management',
+    'EditIndustrySolution',
+    'PreviewIndustrySolution',
   ].includes(currentNav);
 
   const isCareersActive = [
@@ -212,7 +215,7 @@ export default function AdminSidebar({
               </button>
               <button
                 type="button"
-                className={`sidebar-subnav-btn${currentNav === 'Industries Management' ? ' active' : ''}`}
+                className={`sidebar-subnav-btn${['Industries Management', 'EditIndustrySolution', 'PreviewIndustrySolution'].includes(currentNav) ? ' active' : ''}`}
                 onClick={() => handleNavClick('Industries Management')}
               >
                 Industries Management

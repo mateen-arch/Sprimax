@@ -13,6 +13,7 @@ import certificationRoutes from './certificationRoutes.js';
 import supportTicketRoutes from './supportTicketRoutes.js';
 import blogRoutes from './blogRoutes.js';
 import careerRoutes from './careerRoutes.js';
+import solutionRoutes from './solutionRoutes.js';
 
 const router = express.Router();
 
@@ -30,5 +31,6 @@ router.use('/certifications', certificationRoutes);
 router.use('/support-tickets', supportTicketRoutes);
 router.use('/blogs', blogRoutes);
 router.use('/careers', careerRoutes);
+router.use('/solutions', solutionRoutes);
 
 export default router;

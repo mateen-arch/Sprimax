@@ -1,48 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Shield, Award, CheckCircle, Loader2, AlertCircle, FileText, ExternalLink } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import SolutionPageRenderer from './solutions/SolutionPageRenderer.jsx';
 import { getIndustryById } from '../api/industries.js';
 import solutionHeavyEngImg from '../assets/solution-heavy-eng.jpg';
-import companyHeroTriptych from '../assets/company-hero-triptych.png';
-import sectorFabrication from '../assets/sector-fabrication.png';
-import sectorConstruction from '../assets/sector-construction.png';
-import sectorAutomotive from '../assets/sector-automotive.png';
-import sectorHeavyEng from '../assets/sector-heavy-eng.png';
-import sectorMaintenance from '../assets/sector-maintenance.png';
-import sectorPowerPlants from '../assets/sector-power-plants.png';
-import sectorInfrastructure from '../assets/sector-infrastructure.png';
-import sectorManufacturing from '../assets/sector-manufacturing.png';
-import sectorOilGas from '../assets/sector-oil-gas.png';
-import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
-const LOCAL_BANNER_MAP = {
-  'fabrication': sectorFabrication,
-  'construction': sectorConstruction,
-  'automotive': sectorAutomotive,
-  'heavy-engineering': solutionHeavyEngImg,
-  'heavy-eng': solutionHeavyEngImg,
-  'maintenance-mro': sectorMaintenance,
-  'maintenance': sectorMaintenance,
-  'power-plants': sectorPowerPlants,
-  'infrastructure': sectorInfrastructure,
-  'manufacturing': sectorManufacturing,
-  'oil-gas': sectorOilGas,
-};
-
-function resolveIndustryBanner(industry) {
-  if (!industry) return solutionHeavyEngImg;
-  const banner = industry.solutionBanner || industry.image;
-
-  if (banner && (banner.startsWith('http://') || banner.startsWith('https://') || banner.startsWith('data:'))) {
-    return getOptimizedImageUrl(banner, 'banner');
-  }
-
-  const slug = (industry.slug || '').toLowerCase().trim();
-  if (LOCAL_BANNER_MAP[slug]) {
-    return LOCAL_BANNER_MAP[slug];
-  }
-
-  return solutionHeavyEngImg;
-}
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function SolutionsPage({
   industrySlug = 'heavy-engineering',
@@ -51,41 +13,149 @@ export default function SolutionsPage({
   onViewTechnicalDocs,
   onViewProductDetails,
 }) {
-  const [industry, setIndustry] = useState(null);
-  const [mappedProducts, setMappedProducts] = useState([]);
+  const [solution, setSolution] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchIndustryData() {
+    async function loadSolutionData() {
+      setLoading(true);
+      setError(null);
+
+      const targetSlug = (industrySlug || 'heavy-engineering').toLowerCase().trim();
+
+      // 1. First, attempt to load published solution from CMS API
       try {
-        setLoading(true);
-        setError(null);
-        const data = await getIndustryById(industrySlug || 'heavy-engineering');
-        if (isMounted) {
-          setIndustry(data);
-          setMappedProducts(data.mappedProducts || []);
+        const res = await fetch(`${API_BASE}/solutions/public/${encodeURIComponent(targetSlug)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.solution) {
+            setSolution(data.solution);
+            setLoading(false);
+            return;
+          }
         }
       } catch (err) {
-        console.error('Failed to fetch industry solutions:', err);
+        console.warn('[SolutionsPage] CMS API request failed, falling back to legacy industry data:', err);
+      }
+
+      // 2. Fallback: load from existing getIndustryById
+      try {
+        const ind = await getIndustryById(targetSlug);
+        if (isMounted && ind) {
+          // Adapt legacy industry object to standard SolutionPage schema
+          const fallbackSolution = {
+            title: ind.name || 'Heavy Engineering',
+            slug: ind.slug || targetSlug,
+            status: 'Published',
+            breadcrumb: [
+              { label: 'Company', url: '/company' },
+              { label: ind.name || 'Heavy Engineering', url: `/solutions/${ind.slug || targetSlug}` },
+            ],
+            sections: [
+              {
+                id: 'sec-hero',
+                type: 'hero',
+                order: 0,
+                visible: true,
+                data: {
+                  eyebrowTag: `INDUSTRY SOLUTIONS // ${(ind.name || 'HEAVY ENGINEERING').toUpperCase()}`,
+                  heading: ind.solutionHeadline || (ind.name ? `${ind.name.toUpperCase()} & ADVANCED CONSUMABLES` : 'HEAVY ENGINEERING & HEAVY EQUIPMENT'),
+                  description: ind.solutionDescription || ind.description || 'Engineered welding solutions for extreme load-bearing structures and heavy manufacturing.',
+                  primaryCta: { label: 'SUBMIT PROJECT REQUIREMENTS', url: '/submit-requirements' },
+                  secondaryCta: { label: 'VIEW TECHNICAL DOCS', url: '/resources' },
+                  image: ind.solutionBanner || ind.image || solutionHeavyEngImg,
+                  imageAlt: ind.name || 'Heavy Engineering Applications',
+                  imageOverlayCard: {
+                    enabled: true,
+                    label: ind.hudGaugeLabel || 'DATA//YIELD_STRENGTH_REQUIREMENTS',
+                    progressPercent: ind.hudGaugePercent || 82,
+                    caption: ind.hudVerifiedText || 'HIGH-INTEGRITY WELD VERIFIED',
+                  },
+                },
+              },
+              {
+                id: 'sec-challenges',
+                type: 'challenges',
+                order: 1,
+                visible: true,
+                data: {
+                  heading: 'CHALLENGES & SOLUTIONS',
+                  sectionLabel: 'SEC // 02',
+                  cards: (ind.challenges || []).map((ch, i) => ({
+                    id: `ch-${i}`,
+                    title: ch.title,
+                    icon: i === 0 ? 'AlertTriangle' : i === 1 ? 'Shield' : 'Flame',
+                    description: ch.text,
+                    specLabel: 'RECOMMENDED SPECIFICATION',
+                    specText: ch.recommendedSpec,
+                    metricValue: ch.statValue,
+                    metricLabel: ch.statLabel,
+                    layout: i === 2 ? 'full' : 'half',
+                  })),
+                },
+              },
+              {
+                id: 'sec-compliance',
+                type: 'compliance',
+                order: 2,
+                visible: true,
+                data: {
+                  heading: 'TECHNICAL COMPLIANCE',
+                  description: `Our ${(ind.name || 'heavy engineering').toLowerCase()} consumables adhere strictly to international manufacturing and classification society standards, guaranteeing full heat-traceability and certified mechanical properties.`,
+                  link: {
+                    label: `View Quality Certificates for ${ind.name || 'Heavy Engineering'}`,
+                    url: '#quality-certificates',
+                  },
+                  badges: (ind.complianceBadges || ['AWS D1.1', 'ASME Sec IX', 'ISO 3834-2', "Lloyd's Reg"]).map((b) => ({
+                    label: b,
+                    icon: 'Award',
+                  })),
+                },
+              },
+            ],
+          };
+
+          setSolution(fallbackSolution);
+          setLoading(false);
+          return;
+        }
+      } catch (legacyErr) {
         if (isMounted) {
-          setError(err.message || 'Failed to load industry solutions data');
+          setError(legacyErr.message || 'Unable to load industry solutions data');
         }
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     }
 
-    fetchIndustryData();
+    loadSolutionData();
 
     return () => {
       isMounted = false;
     };
   }, [industrySlug]);
+
+  const handleAction = (type, payload) => {
+    if (type === 'primaryCta') {
+      if (onSubmitRequirements) {
+        onSubmitRequirements({
+          name: solution?.title || 'Heavy Engineering',
+          slug: solution?.slug || industrySlug,
+        });
+      }
+    } else if (type === 'secondaryCta' || type === 'complianceLink') {
+      if (onViewTechnicalDocs) {
+        onViewTechnicalDocs(solution?.title || 'Heavy Engineering');
+      }
+    } else if (type === 'breadcrumb') {
+      if (payload?.url === '/company' && onBackToCompany) {
+        onBackToCompany();
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -98,7 +168,7 @@ export default function SolutionsPage({
     );
   }
 
-  if (error || !industry) {
+  if (error || !solution) {
     return (
       <div className="solutions-page-wrapper" style={{ minHeight: '60vh', padding: '4rem 1rem' }}>
         <div className="solutions-container" style={{ maxWidth: '640px', margin: '0 auto', textAlign: 'center', background: '#fff', border: '1px solid #fee2e2', padding: '3rem 2rem', borderRadius: '4px' }}>
@@ -118,223 +188,12 @@ export default function SolutionsPage({
     );
   }
 
-  const industryName = industry.name || 'Industrial Sector';
-  const headline = industry.solutionHeadline || industry.name;
-  const description = industry.solutionDescription || industry.description;
-  const heroImg = resolveIndustryBanner(industry);
-  const challenges = industry.challenges || [];
-  const complianceBadges = industry.complianceBadges || ['AWS D1.1', 'ASME Sec IX', 'ISO 3834', "Lloyd's Reg"];
-  const gaugePercent = industry.hudGaugePercent || 85;
-  const gaugeLabel = industry.hudGaugeLabel || 'DATA//YIELD_STRENGTH_REQUIREMENTS';
-  const gaugeVerified = industry.hudVerifiedText || 'HIGH-INTEGRITY WELD VERIFIED';
-
   return (
-    <div className="solutions-page-wrapper">
-      {/* 1. Breadcrumbs Header Bar */}
-      <section className="solutions-nav-bar">
-        <div className="solutions-container">
-          <div className="solutions-breadcrumbs">
-            <button
-              type="button"
-              className="solutions-back-btn data-tabular"
-              onClick={onBackToCompany}
-              aria-label="Back to Company Sectors"
-            >
-              <ArrowLeft size={15} strokeWidth={2.4} />
-              <span>Back</span>
-            </button>
-            <span className="solutions-breadcrumb-sep">/</span>
-            <button
-              type="button"
-              className="solutions-breadcrumb-link"
-              onClick={onBackToCompany}
-            >
-              Company
-            </button>
-            <span className="solutions-breadcrumb-slash">/</span>
-            <span className="solutions-breadcrumb-active">{industryName}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. Hero Section */}
-      <section className="solutions-hero-section">
-        <div className="solutions-container">
-          <div className="solutions-hero-grid">
-            {/* Left Column: Eyebrow badge, Title, Description, and Actions */}
-            <div className="solutions-hero-text-col">
-              {/* Industry Detail Tag */}
-              <div className="solutions-industry-badge data-tabular">
-                <svg
-                  className="solutions-badge-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="6" cy="18" r="3" />
-                  <circle cx="6" cy="6" r="3" />
-                  <path d="M13 6h3a2 2 0 0 1 2 2v7" />
-                  <line x1="6" y1="9" x2="6" y2="15" />
-                </svg>
-                <span>Industry Solutions // {industryName.toUpperCase()}</span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="solutions-hero-title headline-lg" style={{ textTransform: 'uppercase' }}>
-                {headline}
-              </h1>
-
-              {/* Subtitle Description */}
-              <p className="solutions-hero-desc body-md">
-                {description}
-              </p>
-
-              {/* Action Buttons */}
-              <div className="solutions-hero-actions">
-                <button
-                  type="button"
-                  className="solutions-btn-primary data-tabular"
-                  onClick={() => onSubmitRequirements ? onSubmitRequirements(industry) : null}
-                >
-                  <span>SUBMIT PROJECT REQUIREMENTS</span>
-                  <ArrowRight size={15} strokeWidth={2.5} />
-                </button>
-
-                <button
-                  type="button"
-                  className="solutions-btn-secondary data-tabular"
-                  onClick={() => onViewTechnicalDocs ? onViewTechnicalDocs(industryName) : null}
-                >
-                  <span>VIEW TECHNICAL DOCS</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Right Column: Hero Sector Image with HUD Gauge Card */}
-            <div className="solutions-hero-img-col">
-              <div className="solutions-img-frame">
-                <img
-                  src={heroImg}
-                  alt={`${industryName} engineered solutions applications`}
-                  className="solutions-hero-img"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = solutionHeavyEngImg;
-                  }}
-                />
-
-                {/* Technical HUD Overlay Card */}
-                <div className="solutions-hud-card">
-                  <div className="solutions-hud-header data-tabular">
-                    <span>{gaugeLabel}</span>
-                  </div>
-                  <div className="solutions-hud-gauge">
-                    <div className="solutions-hud-bar-fill" style={{ width: `${gaugePercent}%` }} />
-                    <div className="solutions-hud-bar-empty" style={{ width: `${100 - gaugePercent}%` }} />
-                  </div>
-                  <div className="solutions-hud-footer data-tabular">
-                    <span>{gaugeVerified}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Challenges & Solutions Section (Dynamic from Database) */}
-      <section className="solutions-challenges-section">
-        <div className="solutions-container">
-          <div className="solutions-sec-header">
-            <h2 className="solutions-sec-title headline-sm">CHALLENGES &amp; SOLUTIONS</h2>
-            <div className="solutions-sec-tag data-tabular">SEC // 02</div>
-          </div>
-          <div className="solutions-sec-divider" aria-hidden="true" />
-
-          {/* Cards Grid */}
-          <div className="solutions-challenges-grid">
-            {challenges.map((ch, idx) => {
-              const isFullWidth = idx === 2 || challenges.length === 1;
-
-              return (
-                <div
-                  key={idx}
-                  className={`solutions-challenge-card ${isFullWidth ? 'solutions-card-full-width' : ''}`}
-                >
-                  <div className={isFullWidth ? 'solutions-card-main-col' : ''}>
-                    <div className="solutions-card-header">
-                      <span className="solutions-warn-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="#ff0804" stroke="#ffffff" strokeWidth="1.5">
-                          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                          <line x1="12" y1="9" x2="12" y2="13" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
-                          <line x1="12" y1="17" x2="12.01" y2="17" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-                        </svg>
-                      </span>
-                      <h3 className="solutions-card-title data-tabular">{ch.title}</h3>
-                    </div>
-                    <p className="solutions-card-text body-sm">{ch.text}</p>
-                    <div className="solutions-spec-box">
-                      <span className="solutions-spec-label data-tabular">RECOMMENDED SPECIFICATION</span>
-                      <p className="solutions-spec-val data-tabular">{ch.recommendedSpec}</p>
-                    </div>
-                  </div>
-
-                  {ch.statValue && (
-                    <div className="solutions-stat-badge-box">
-                      <div className="solutions-stat-number headline-md">{ch.statValue}</div>
-                      <div className="solutions-stat-label data-tabular">{ch.statLabel}</div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-            {/* 5. Technical Compliance Section */}
-      <section className="solutions-compliance-section">
-        <div className="solutions-container">
-          <div className="solutions-compliance-banner">
-            {/* Left Content */}
-            <div className="solutions-compliance-text-col">
-              <h2 className="solutions-compliance-title headline-md">TECHNICAL COMPLIANCE</h2>
-              <p className="solutions-compliance-desc body-sm">
-                Our {industryName.toLowerCase()} consumables adhere strictly to international manufacturing and classification society standards, guaranteeing full heat-traceability and certified mechanical properties.
-              </p>
-              <a
-                href="#quality-certificates"
-                className="solutions-compliance-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (onViewTechnicalDocs) onViewTechnicalDocs(industryName);
-                }}
-              >
-                <span>View Quality Certificates for {industryName}</span>
-                <ArrowRight size={14} strokeWidth={2.4} />
-              </a>
-            </div>
-
-            {/* Right Badges Grid */}
-            <div className="solutions-compliance-badges-grid">
-              {complianceBadges.map((badgeText, bIdx) => (
-                <div key={bIdx} className="solutions-cert-card">
-                  <div className="solutions-cert-rosette" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="#ff0804" stroke="#ff0804">
-                      <path d="M12 2l1.6 2.3 2.7-.8.7 2.7 2.7.7-.8 2.7 2.3 1.6-1.6 2.3.8 2.7-2.7.7-.7 2.7-2.7-.8-1.6 2.3-1.6-2.3-2.7.8-.7-2.7-2.7-.7.8-2.7-2.3-1.6 1.6-2.3-.8-2.7 2.7-.7.7-2.7 2.7.8z" />
-                      <path d="M8.5 12l2.5 2.5 5-5" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <span className="solutions-cert-code data-tabular">{badgeText}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <SolutionPageRenderer
+      solution={solution}
+      onAction={handleAction}
+      onBack={onBackToCompany}
+      previewMode={false}
+    />
   );
 }

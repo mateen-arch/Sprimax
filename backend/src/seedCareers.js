@@ -4,6 +4,12 @@ import Job from './models/Job.js';
 import Application from './models/Application.js';
 import CareersSetting from './models/CareersSetting.js';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/sprimax';

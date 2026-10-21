@@ -43,7 +43,12 @@ const AVAILABLE_PRODUCTS = [
   'Heavy Duty Regulators',
 ];
 
-export default function IndustriesManagementPage({ onLogout, onNavigate }) {
+export default function IndustriesManagementPage({
+  onLogout,
+  onNavigate,
+  onEditIndustrySolution,
+  onPreviewIndustrySolution,
+}) {
   const [activeTab, setActiveTab] = useState('sectors'); // 'sectors' | 'requirements'
   const [industries, setIndustries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -391,10 +396,16 @@ export default function IndustriesManagementPage({ onLogout, onNavigate }) {
               <button
                 type="button"
                 className="btn-add-industry"
-                onClick={handleOpenAddModal}
+                onClick={() => {
+                  if (onEditIndustrySolution) {
+                    onEditIndustrySolution(null);
+                  } else {
+                    handleOpenAddModal();
+                  }
+                }}
               >
                 <Plus aria-hidden="true" />
-                <span>Add Industry</span>
+                <span>Add Industry &amp; Solution</span>
               </button>
             )}
           </div>
@@ -547,8 +558,17 @@ export default function IndustriesManagementPage({ onLogout, onNavigate }) {
                                   <ImageIcon aria-hidden="true" />
                                 </div>
 
-                                <div className="industry-name-cluster">
-                                  <span className="industry-title-text">{ind.name}</span>
+                                <div
+                                  className="industry-name-cluster"
+                                  style={{ cursor: onEditIndustrySolution ? 'pointer' : 'default' }}
+                                  onClick={() => {
+                                    if (onEditIndustrySolution) {
+                                      onEditIndustrySolution(ind.id || ind.slug);
+                                    }
+                                  }}
+                                  title={onEditIndustrySolution ? 'Click to edit industry & solution' : undefined}
+                                >
+                                  <span className="industry-title-text" style={{ color: '#000417', fontWeight: 600 }}>{ind.name}</span>
                                   <span className="industry-subtitle-text">{ind.subtitle}</span>
                                 </div>
                               </div>
@@ -596,10 +616,30 @@ export default function IndustriesManagementPage({ onLogout, onNavigate }) {
                                     <button
                                       type="button"
                                       className="ind-action-item"
-                                      onClick={() => handleOpenEditModal(ind)}
+                                      onClick={() => {
+                                        setActiveMenuId(null);
+                                        if (onEditIndustrySolution) {
+                                          onEditIndustrySolution(ind.id || ind.slug);
+                                        } else {
+                                          handleOpenEditModal(ind);
+                                        }
+                                      }}
                                     >
                                       <Edit2 aria-hidden="true" />
                                       <span>Edit Industry &amp; Solutions</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="ind-action-item"
+                                      onClick={() => {
+                                        setActiveMenuId(null);
+                                        if (onPreviewIndustrySolution) {
+                                          onPreviewIndustrySolution(ind.id || ind.slug);
+                                        }
+                                      }}
+                                    >
+                                      <Eye aria-hidden="true" />
+                                      <span>Preview Solution Page</span>
                                     </button>
                                     <button
                                       type="button"
