@@ -807,40 +807,6 @@ export default function SolutionEditorPage({
                   Modular, block-based sections that render on the public /solutions/{slug || 'sector'} page
                 </p>
               </div>
-
-              {/* Add Section Dropdown */}
-              <div className="add-section-dropdown-wrap">
-                <button
-                  type="button"
-                  className="btn-add-section-main"
-                  onClick={() => setAddSectionMenuOpen(!addSectionMenuOpen)}
-                >
-                  <Plus size={16} />
-                  <span>Add Section</span>
-                  <ChevronDown size={14} />
-                </button>
-
-                {addSectionMenuOpen && (
-                  <div className="add-section-menu">
-                    {Object.entries(SECTION_METADATA).map(([secKey, meta]) => (
-                      <button
-                        key={secKey}
-                        type="button"
-                        className="add-section-menu-item"
-                        onClick={() => handleAddSection(secKey)}
-                      >
-                        <div className="sec-item-icon-wrap">
-                          <Layers size={14} />
-                        </div>
-                        <div className="sec-item-text">
-                          <span className="sec-item-title">{meta.label}</span>
-                          <span className="sec-item-desc">{meta.description}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Section Blocks Accordion List */}
