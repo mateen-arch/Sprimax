@@ -11,15 +11,16 @@ import {
   Compass,
   Layers,
   FlaskConical,
-  Activity,
+
   ArrowDown,
   X,
   FileCheck,
 } from 'lucide-react';
 import { getCertifications } from '../api/certifications.js';
 import heroQualityImg from '../assets/quality-precision-hero.jpg';
-import labChemicalImg from '../assets/lab-chemical-analysis.jpg';
-import labMechanicalImg from '../assets/lab-mechanical-testing.jpg';
+import labChemicalImg from '../assets/lab-chemical-analysis.png';
+import labMechanicalImg from '../assets/lab-mechanical-testing.png';
+import iconMechanicalTesting from '../assets/icon-mechanical-testing.png';
 import './IsoCertificationsPage.css';
 
 export default function IsoCertificationsPage({ onNavigateToContact }) {
@@ -419,7 +420,7 @@ export default function IsoCertificationsPage({ onNavigateToContact }) {
               </div>
               <div className="iso-facility-content">
                 <div className="iso-facility-header">
-                  <Activity size={20} className="iso-facility-icon" />
+                  <img src={iconMechanicalTesting} alt="Mechanical Testing" className="iso-facility-icon-img" />
                   <h3 className="iso-facility-title">Mechanical Testing</h3>
                 </div>
                 <ul className="iso-facility-list">

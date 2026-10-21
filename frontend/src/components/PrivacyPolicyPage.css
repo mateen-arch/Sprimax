@@ -269,7 +269,14 @@
 }
 
 .privacy-contact-row span {
-  color: #334155;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.privacy-contact-row .privacy-contact-val,
+.privacy-contact-row .privacy-contact-val strong {
+  color: #0f172a;
+  font-weight: 700;
 }
 
 /* Responsive */

@@ -1,13 +1,10 @@
 import React from 'react';
-import {
-  Package,
-  Layers,
-  FileText,
-  Building2,
-  PhoneCall,
-  Shield,
-  ChevronRight,
-} from 'lucide-react';
+import iconProducts from '../assets/icon-sitemap-products.png';
+import iconIndustries from '../assets/icon-sitemap-industries.png';
+import iconResources from '../assets/icon-sitemap-resources.png';
+import iconCompany from '../assets/icon-sitemap-company.png';
+import iconContact from '../assets/icon-sitemap-contact.png';
+import iconLegal from '../assets/icon-sitemap-legal.png';
 import './SitemapPage.css';
 
 export default function SitemapPage({ onNavigate }) {
@@ -16,7 +13,7 @@ export default function SitemapPage({ onNavigate }) {
     {
       id: 'products',
       title: 'Products',
-      icon: <Package size={18} className="sitemap-card-icon" />,
+      icon: <img src={iconProducts} alt="Products" className="sitemap-card-icon-img" />,
       links: [
         { label: 'Stick Electrodes (SMAW)', page: 'products', category: 'Stick Electrodes (SMAW)' },
         { label: 'MIG/MAG Wires (GMAW)', page: 'products', category: 'Solid Wires (GMAW)' },
@@ -29,7 +26,7 @@ export default function SitemapPage({ onNavigate }) {
     {
       id: 'industries',
       title: 'Industries',
-      icon: <Layers size={18} className="sitemap-card-icon" />,
+      icon: <img src={iconIndustries} alt="Industries" className="sitemap-card-icon-img" />,
       links: [
         { label: 'Oil & Gas Pipeline', page: 'solutions', industry: 'oil-gas' },
         { label: 'Shipbuilding & Offshore', page: 'solutions', industry: 'shipbuilding' },
@@ -41,7 +38,7 @@ export default function SitemapPage({ onNavigate }) {
     {
       id: 'resources',
       title: 'Resources',
-      icon: <FileText size={18} className="sitemap-card-icon" />,
+      icon: <img src={iconResources} alt="Resources" className="sitemap-card-icon-img" />,
       links: [
         { label: 'Safety Data Sheets (SDS)', page: 'resources', type: 'sds' },
         { label: 'Technical Data Sheets', page: 'resources', type: 'tds' },
@@ -54,7 +51,7 @@ export default function SitemapPage({ onNavigate }) {
     {
       id: 'company',
       title: 'Company',
-      icon: <Building2 size={18} className="sitemap-card-icon" />,
+      icon: <img src={iconCompany} alt="Company" className="sitemap-card-icon-img" />,
       links: [
         { label: 'About Sprimax', page: 'about' },
         { label: 'Company Overview & Sectors', page: 'company' },
@@ -65,7 +62,7 @@ export default function SitemapPage({ onNavigate }) {
     {
       id: 'contact',
       title: 'Contact & Support',
-      icon: <PhoneCall size={18} className="sitemap-card-icon" />,
+      icon: <img src={iconContact} alt="Contact & Support" className="sitemap-card-icon-img" />,
       links: [
         { label: 'Contact Us & Head Office', page: 'contact' },
         { label: 'Technical Support Team', page: 'contact' },
@@ -76,10 +73,12 @@ export default function SitemapPage({ onNavigate }) {
     {
       id: 'legal',
       title: 'Legal',
-      icon: <Shield size={18} className="sitemap-card-icon" />,
+      icon: <img src={iconLegal} alt="Legal" className="sitemap-card-icon-img" />,
       links: [
         { label: 'Privacy Policy', page: 'privacy' },
         { label: 'Terms of Service', page: 'terms' },
+        { label: 'Trademarks & Copyright', page: 'trademarks-copyright' },
+        { label: 'Cookie Policy', page: 'cookie-policy' },
       ],
     },
   ];

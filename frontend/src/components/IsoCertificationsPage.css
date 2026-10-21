@@ -498,6 +498,14 @@
   margin-bottom: 1.25rem;
 }
 
+.iso-facility-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
 .iso-facility-icon {
   color: #395f94;
 }

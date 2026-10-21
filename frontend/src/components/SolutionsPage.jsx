@@ -12,7 +12,6 @@ import sectorPowerPlants from '../assets/sector-power-plants.png';
 import sectorInfrastructure from '../assets/sector-infrastructure.png';
 import sectorManufacturing from '../assets/sector-manufacturing.png';
 import sectorOilGas from '../assets/sector-oil-gas.png';
-import noImagePlaceholder from '../assets/no-image-placeholder.png';
 import { getOptimizedImageUrl } from '../utils/cloudinary.js';
 
 const LOCAL_BANNER_MAP = {
@@ -296,119 +295,13 @@ export default function SolutionsPage({
         </div>
       </section>
 
-      {/* 4. Live Mapped Consumables & Systems for this Industry */}
-      {mappedProducts && mappedProducts.length > 0 && (
-        <section style={{ padding: '4rem 0', background: '#f8fafc', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
-          <div className="solutions-container">
-            <div className="solutions-sec-header">
-              <div>
-                <h2 className="solutions-sec-title headline-sm">RECOMMENDED CONSUMABLES FOR {industryName.toUpperCase()}</h2>
-                <p className="body-sm" style={{ color: '#64748b', marginTop: '0.35rem' }}>
-                  Laboratory-verified batch consumables engineered specifically for {industryName} environments.
-                </p>
-              </div>
-              <div className="solutions-sec-tag data-tabular">SEC // 03</div>
-            </div>
-            <div className="solutions-sec-divider" aria-hidden="true" />
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
-              {mappedProducts.map((prod) => {
-                const prodImage = prod.image || (prod.images && prod.images[0]) || noImagePlaceholder;
-                const tensile = prod.specifications ? prod.specifications.tensileStrength || prod.specifications.get?.('tensileStrength') : null;
-
-                return (
-                  <div
-                    key={prod._id || prod.sku}
-                    style={{
-                      background: '#ffffff',
-                      border: '1px solid #cbd5e1',
-                      borderRadius: '2px',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      boxShadow: '0 1px 3px rgba(0,4,23,0.04)',
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                    }}
-                  >
-                    <div style={{ height: '180px', background: '#0b1329', overflow: 'hidden', position: 'relative' }}>
-                      <img
-                        src={prodImage}
-                        alt={prod.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1rem' }}
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = noImagePlaceholder;
-                        }}
-                      />
-                      <span
-                        className="data-tabular"
-                        style={{
-                          position: 'absolute',
-                          top: '10px',
-                          left: '10px',
-                          background: '#ff0804',
-                          color: '#fff',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: '2px',
-                        }}
-                      >
-                        {prod.awsClass || 'AWS SPECIFIED'}
-                      </span>
-                    </div>
-
-                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-                      <div className="data-tabular" style={{ fontSize: '12px', color: '#64748b', marginBottom: '0.35rem' }}>
-                        SKU: {prod.sku}
-                      </div>
-                      <h3 className="headline-sm" style={{ fontSize: '16px', color: '#000417', marginBottom: '0.75rem', lineHeight: '1.3' }}>
-                        {prod.name}
-                      </h3>
-                      <p className="body-sm" style={{ color: '#475569', fontSize: '13px', lineHeight: '1.5', marginBottom: '1.25rem', flex: 1 }}>
-                        {prod.description?.slice(0, 110)}...
-                      </p>
-
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '1rem' }}>
-                        <span className="data-tabular" style={{ fontSize: '12px', color: '#000417', fontWeight: 600 }}>
-                          {prod.category}
-                        </span>
-                        <button
-                          type="button"
-                          className="data-tabular"
-                          onClick={() => onViewProductDetails ? onViewProductDetails(prod.sku || prod._id) : null}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '5px',
-                            background: 'none',
-                            border: 'none',
-                            color: '#ff0804',
-                            fontWeight: 700,
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          <span>VIEW SPECS</span>
-                          <ArrowRight size={13} strokeWidth={2.6} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 5. Technical Compliance Section */}
+            {/* 5. Technical Compliance Section */}
       <section className="solutions-compliance-section">
         <div className="solutions-container">
           <div className="solutions-compliance-banner">
             {/* Left Content */}
             <div className="solutions-compliance-text-col">
-              <h2 className="solutions-compliance-title headline-md">TECHNICAL COMPLIANCE &amp; APPROVALS</h2>
+              <h2 className="solutions-compliance-title headline-md">TECHNICAL COMPLIANCE</h2>
               <p className="solutions-compliance-desc body-sm">
                 Our {industryName.toLowerCase()} consumables adhere strictly to international manufacturing and classification society standards, guaranteeing full heat-traceability and certified mechanical properties.
               </p>

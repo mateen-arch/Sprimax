@@ -74,6 +74,14 @@
   margin-bottom: 0.85rem;
 }
 
+.sitemap-card-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
 .sitemap-card-icon {
   color: #395f94;
 }

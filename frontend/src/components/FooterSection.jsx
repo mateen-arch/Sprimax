@@ -13,6 +13,8 @@ export default function FooterSection({ onNavigate }) {
     { label: 'Contact Technical Support', href: '#support', page: 'contact' },
     { label: 'Privacy Policy', href: '#privacy', page: 'privacy' },
     { label: 'Terms of Service', href: '#terms', page: 'terms' },
+    { label: 'Trademarks & Copyright', href: '#trademarks-copyright', page: 'trademarks-copyright' },
+    { label: 'Cookie Policy', href: '#cookie-policy', page: 'cookie-policy' },
     { label: 'FAQ', href: '#faq', page: 'faq' },
   ];
 

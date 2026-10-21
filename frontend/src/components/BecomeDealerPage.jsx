@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, ShieldCheck, Gauge, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, CheckCircle2 } from 'lucide-react';
+import iconProductAccess from '../assets/icon-product-access.png';
+import iconTechnicalSupport from '../assets/icon-technical-support.png';
 import { submitEnquiry } from '../api/enquiries.js';
 
 export default function BecomeDealerPage({ onBackToContact, onSubmitDealerEnquiry }) {
@@ -90,7 +92,11 @@ export default function BecomeDealerPage({ onBackToContact, onSubmitDealerEnquir
               {/* Feature 1: Premium Product Access */}
               <div className="dealer-feature-card">
                 <div className="dealer-feature-icon-box" aria-hidden="true">
-                  <ShieldCheck size={20} strokeWidth={2.2} />
+                  <img 
+                    src={iconProductAccess} 
+                    alt="Premium Product Access" 
+                    className="dealer-feature-icon-img" 
+                  />
                 </div>
                 <div className="dealer-feature-body">
                   <h3 className="dealer-feature-title headline-sm">Premium Product Access</h3>
@@ -103,7 +109,11 @@ export default function BecomeDealerPage({ onBackToContact, onSubmitDealerEnquir
               {/* Feature 2: Technical Support */}
               <div className="dealer-feature-card">
                 <div className="dealer-feature-icon-box" aria-hidden="true">
-                  <Gauge size={20} strokeWidth={2.2} />
+                  <img 
+                    src={iconTechnicalSupport} 
+                    alt="Technical Support" 
+                    className="dealer-feature-icon-img" 
+                  />
                 </div>
                 <div className="dealer-feature-body">
                   <h3 className="dealer-feature-title headline-sm">Technical Support</h3>

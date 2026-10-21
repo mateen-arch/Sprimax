@@ -5110,6 +5110,15 @@
   height: 26px;
 }
 
+.about-value-icon-box img,
+.about-value-icon-img {
+  width: auto;
+  height: 22px;
+  max-height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
 .about-value-title {
   font-family: var(--font-headline);
   font-size: 16.5px;
@@ -7389,6 +7398,19 @@
   color: #000417;
   margin-top: 1px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.dealer-feature-icon-box img,
+.dealer-feature-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
 }
 
 .dealer-feature-body {

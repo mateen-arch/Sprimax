@@ -15,6 +15,8 @@ import SearchProductsPage from './components/SearchProductsPage';
 import SubmitProjectRequirementsPage from './components/SubmitProjectRequirementsPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsAndConditionsPage from './components/TermsAndConditionsPage';
+import TrademarksCopyrightPage from './components/TrademarksCopyrightPage';
+import CookiePolicyPage from './components/CookiePolicyPage';
 import FaqPage from './components/FaqPage';
 import SitemapPage from './components/SitemapPage';
 import IsoCertificationsPage from './components/IsoCertificationsPage';
@@ -48,6 +50,8 @@ function getInitialPageFromUrl() {
   if (['submit-requirements', 'custom-requirements'].includes(candidate)) return 'submit-requirements';
   if (['privacy', 'privacy-policy'].includes(candidate)) return 'privacy';
   if (['terms', 'terms-of-service', 'terms-and-conditions', 'conditions'].includes(candidate)) return 'terms';
+  if (['trademarks', 'trademarks-copyright', 'copyright', 'trademark'].includes(candidate)) return 'trademarks-copyright';
+  if (['cookies', 'cookie-policy', 'cookie'].includes(candidate)) return 'cookie-policy';
   if (['faq', 'faqs', 'help'].includes(candidate)) return 'faq';
   if (['sitemap'].includes(candidate)) return 'sitemap';
   if (['iso', 'iso-certifications', 'certifications', 'quality'].includes(candidate)) return 'iso';
@@ -420,6 +424,20 @@ export default function App() {
           />
         ) : currentPage === 'terms' ? (
           <TermsAndConditionsPage
+            onBack={() => {
+              setCurrentPage('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : currentPage === 'trademarks-copyright' ? (
+          <TrademarksCopyrightPage
+            onBack={() => {
+              setCurrentPage('home');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        ) : currentPage === 'cookie-policy' ? (
+          <CookiePolicyPage
             onBack={() => {
               setCurrentPage('home');
               window.scrollTo({ top: 0, behavior: 'smooth' });

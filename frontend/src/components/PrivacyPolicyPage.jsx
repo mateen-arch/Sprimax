@@ -209,13 +209,13 @@ export default function PrivacyPolicyPage({ onBack }) {
                 </p>
                 <div className="privacy-contact-box">
                   <div className="privacy-contact-row">
-                    <strong>Email:</strong> <span>compliance@weldtech-industrial.com</span>
+                    <strong>Email:</strong> <span className="privacy-contact-val"><strong>compliance@weldtech-industrial.com</strong></span>
                   </div>
                   <div className="privacy-contact-row">
-                    <strong>Phone:</strong> <span>+1 (555) 019-8273</span>
+                    <strong>Phone:</strong> <span className="privacy-contact-val"><strong>+1 (555) 019-8273</strong></span>
                   </div>
                   <div className="privacy-contact-row">
-                    <strong>Address:</strong> <span>WELD-TECH INDUSTRIAL HQ, 400 Heavy Industry Way, Sector 7, TX 78000</span>
+                    <strong>Address:</strong> <span className="privacy-contact-val"><strong>WELD-TECH INDUSTRIAL HQ, 400 Heavy Industry Way, Sector 7, TX 78000</strong></span>
                   </div>
                 </div>
               </div>

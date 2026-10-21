@@ -3,6 +3,7 @@ import aboutHeroBg from '../assets/about-hero-bg.jpg';
 import aboutWeldedJoint from '../assets/about-welded-joint.png';
 import iconMissionRobot from '../assets/icon-mission-robot.png';
 import iconVisionGlobe from '../assets/icon-vision-globe.png';
+import iconReliablePartnership from '../assets/icon-reliable-partnership.png';
 
 export default function AboutUsPage() {
   return (
@@ -149,13 +150,11 @@ export default function AboutUsPage() {
             {/* Bottom Right: Reliable Partnership (Column 3) */}
             <div className="about-card about-value-card">
               <div className="about-value-icon-box" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m11 17 2 2a1 1 0 0 0 1.4 0l4.6-4.6a2 2 0 0 0 0-2.8l-3.2-3.2a2 2 0 0 0-2.8 0L9.4 12" />
-                  <path d="m13 7.5 1.5 1.5" />
-                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h1.5" />
-                  <path d="M14 4h2a2 2 0 0 1 2 2v2" />
-                  <path d="m3 14 3-3a2 2 0 0 1 2.8 0l1.8 1.8" />
-                </svg>
+                <img 
+                  src={iconReliablePartnership} 
+                  alt="Reliable Partnership" 
+                  className="about-value-icon-img" 
+                />
               </div>
               <h4 className="about-value-title headline-xs">Reliable Partnership</h4>
               <p className="about-value-desc body-sm">

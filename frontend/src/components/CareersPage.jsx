@@ -48,6 +48,199 @@ import './CareersPage.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+
+// Helper function to normalize any job (from live API or local fallback)
+// ensuring all nested sections, metrics, and recruiter fields exist
+function normalizeCareerRole(role) {
+  if (!role) return null;
+
+  const stat0 = (role.statCards && role.statCards[0]) || role.basePlant || { code: 'DXB-04', subtext: role.location || 'Jebel Ali South' };
+  const stat1 = (role.statCards && role.statCards[1]) || role.accreditation || { code: 'ISO 17025', subtext: 'Calibrated Testing' };
+  const stat2 = (role.statCards && role.statCards[2]) || role.teamSize || { code: '18 Eng.', subtext: role.department || 'Materials Div' };
+  const stat3 = (role.statCards && role.statCards[3]) || role.visaSponsorship || { code: 'Full UAE', subtext: 'Direct Corporate' };
+
+  let missionParagraphs = [];
+  let missionHighlights = [];
+  let responsibilities = [];
+  let qualificationsMandatory = [];
+  let qualificationsPreferred = [];
+  let facilityContext = role.facilityContext || null;
+  let benefits = Array.isArray(role.benefits) ? role.benefits : [];
+
+  if (Array.isArray(role.sections) && role.sections.length > 0) {
+    role.sections.forEach((sec) => {
+      if (sec.type === 'mission' && sec.data) {
+        if (Array.isArray(sec.data.paragraphs)) missionParagraphs = sec.data.paragraphs;
+        if (Array.isArray(sec.data.highlights)) missionHighlights = sec.data.highlights;
+      } else if (sec.type === 'responsibilities' && sec.data) {
+        if (Array.isArray(sec.data.items)) responsibilities = sec.data.items;
+        else if (Array.isArray(sec.data)) responsibilities = sec.data;
+      } else if (sec.type === 'qualifications' && sec.data) {
+        if (Array.isArray(sec.data.mandatory)) qualificationsMandatory = sec.data.mandatory;
+        if (Array.isArray(sec.data.preferred)) qualificationsPreferred = sec.data.preferred;
+      } else if (sec.type === 'facilityContext' && sec.data) {
+        facilityContext = sec.data;
+      } else if (sec.type === 'benefits' && sec.data) {
+        if (Array.isArray(sec.data.items)) benefits = sec.data.items;
+        else if (Array.isArray(sec.data)) benefits = sec.data;
+      }
+    });
+  }
+
+  if (missionParagraphs.length === 0) {
+    if (role.mission?.paragraphs && Array.isArray(role.mission.paragraphs)) {
+      missionParagraphs = role.mission.paragraphs;
+    } else {
+      missionParagraphs = [
+        role.shortDescription || role.tagline || 'Join Sprimax Industrial to engineer high-integrity structural welding solutions for heavy industry globally.',
+        'In this role, you will collaborate with our cross-disciplinary materials science teams, certifying critical consumables, developing next-generation joining techniques, and supporting major international infrastructure projects across the region.',
+      ];
+    }
+  }
+
+  if (missionHighlights.length === 0) {
+    if (role.mission?.highlights && Array.isArray(role.mission.highlights)) {
+      missionHighlights = role.mission.highlights;
+    } else {
+      missionHighlights = [
+        {
+          title: 'Global Standards Custody',
+          description: 'Direct authority on international metallurgy, AWS D1.1, ASME IX, and ISO certification standards.',
+          icon: 'shield-check',
+        },
+        {
+          title: 'Technical Excellence',
+          description: 'Access to state-of-the-art testing facilities, automated welding bays, and mechanical laboratories.',
+          icon: 'microscope',
+        },
+      ];
+    }
+  }
+
+  if (responsibilities.length === 0) {
+    if (Array.isArray(role.responsibilities) && role.responsibilities.length > 0) {
+      responsibilities = role.responsibilities;
+    } else {
+      responsibilities = [
+        `Lead key technical initiatives within the ${role.department || 'Engineering'} team, ensuring strict adherence to industrial standards.`,
+        'Analyze procedural quality metrics, conducting destructive and non-destructive testing on critical welding consumable batches.',
+        'Collaborate with regional distributors and client engineering teams on complex application specifications and metallurgical challenges.',
+        'Author, review, and certify technical documentation, compliance dossiers, and material test certificates.',
+        'Uphold company safety, environmental, and ISO quality management guidelines across all project stages.',
+      ];
+    }
+  }
+
+  if (qualificationsMandatory.length === 0) {
+    if (role.qualifications?.mandatory && Array.isArray(role.qualifications.mandatory)) {
+      qualificationsMandatory = role.qualifications.mandatory;
+    } else {
+      qualificationsMandatory = [
+        {
+          label: 'Experience & Education',
+          text: (role.educationLevel ? `${role.educationLevel} in relevant engineering discipline. ` : 'Bachelor or Master of Science in relevant discipline. ') + (role.minExperienceYears ? `${role.minExperienceYears}+ years of direct industrial experience.` : 'Demonstrated track record in industrial engineering or welding consumables.'),
+        },
+        {
+          label: 'Technical Competence',
+          text: 'Familiarity with international welding standards, material properties, metallurgy, and ISO testing protocols.',
+        },
+      ];
+    }
+  }
+
+  if (qualificationsPreferred.length === 0) {
+    if (role.qualifications?.preferred && Array.isArray(role.qualifications.preferred)) {
+      qualificationsPreferred = role.qualifications.preferred;
+    } else {
+      qualificationsPreferred = [
+        'Experience with automated or robotic welding equipment and advanced metallurgical spectrometry.',
+        'Previous experience working with classification societies (DNV, Lloyd\'s Register, ABS, Bureau Veritas).',
+      ];
+    }
+  }
+
+  if (benefits.length === 0) {
+    benefits = [
+      {
+        icon: 'wallet',
+        title: 'Tier-1 Compensation',
+        description: 'Competitive, tax-free executive base salary with annual performance incentives.',
+      },
+      {
+        icon: 'plane',
+        title: 'Relocation & Visa Sponsorship',
+        description: 'Full premium corporate visa sponsorship, flight allowances, and family relocation stipend.',
+      },
+      {
+        icon: 'shield',
+        title: 'Comprehensive Healthcare',
+        description: 'Worldwide medical, dental, and life insurance coverage for employee and dependents.',
+      },
+      {
+        icon: 'award',
+        title: 'Technical Certification Support',
+        description: 'Sponsored certifications with AWS, TWI, and leading international metallurgy institutes.',
+      },
+    ];
+  }
+
+  const sidebar = {
+    targetStartDate: role.sidebar?.targetStartDate || 'Immediate / Q1 2025',
+    targetStartDateColor: role.sidebar?.targetStartDateColor || 'green',
+    division: role.sidebar?.division || role.department || 'Heavy Industrial Materials',
+    location: role.sidebar?.location || role.location || 'Regional Facilities',
+    employment: role.sidebar?.employment || role.employmentType || role.type || 'Full-time / Direct',
+    travelReq: role.sidebar?.travelReq || '15% Regional',
+    securityLevel: role.sidebar?.securityLevel || 'Level-2 Technical',
+    reviewCycle: role.sidebar?.reviewCycle || 'TYPICALLY 3-5 BUSINESS DAYS',
+    recruiter: {
+      name: role.sidebar?.recruiter?.name || 'Elena Rostova',
+      role: role.sidebar?.recruiter?.role || 'LEAD TECH RECRUITER',
+      email: role.sidebar?.recruiter?.email || 'careers@sprimax.com',
+      quote: role.sidebar?.recruiter?.quote || 'Have questions about laboratory equipment, ISO scope, or relocation allowances? Connect directly with our engineering talent cell.',
+      avatarUrl: role.sidebar?.recruiter?.avatarUrl || '',
+    },
+    ...role.sidebar,
+  };
+
+  return {
+    ...role,
+    subtitle: role.subtitle || role.tagline || role.shortDescription || 'Advance heavy industrial manufacturing and metallurgy with Sprimax.',
+    departmentFull: role.departmentFull || role.department || 'ENGINEERING DEPT',
+    type: role.type || role.employmentType || 'Full-time',
+    reqCode: role.reqCode || 'REQ-7018-SPX',
+    postedDate: role.postedDate || role.formattedPostedDate || 'RECENT',
+    basePlant: {
+      code: stat0.code || 'DXB-04',
+      subtext: stat0.subtext || stat0.label || 'Jebel Ali South',
+    },
+    accreditation: {
+      code: stat1.code || 'ISO 17025',
+      subtext: stat1.subtext || stat1.label || 'Calibrated Testing',
+    },
+    teamSize: {
+      code: stat2.code || '18 Eng.',
+      subtext: stat2.subtext || stat2.label || 'Materials Div',
+    },
+    visaSponsorship: {
+      code: stat3.code || 'Full UAE',
+      subtext: stat3.subtext || stat3.label || 'Direct Corporate',
+    },
+    mission: {
+      paragraphs: missionParagraphs,
+      highlights: missionHighlights,
+    },
+    responsibilities,
+    qualifications: {
+      mandatory: qualificationsMandatory,
+      preferred: qualificationsPreferred,
+    },
+    benefits,
+    facilityContext,
+    sidebar,
+  };
+}
+
 export default function CareersPage({
   initialRoleSlug = null,
   onBackToHome,
@@ -139,7 +332,7 @@ export default function CareersPage({
               (r) => r.slug === initialRoleSlug || r._id === initialRoleSlug || r.id === initialRoleSlug
             );
             if (found) {
-              setActiveRole(found);
+              setActiveRole(normalizeCareerRole(found));
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }
           }
@@ -159,7 +352,8 @@ export default function CareersPage({
   }, [initialRoleSlug]);
 
   const handleOpenRoleDetail = (role) => {
-    setActiveRole(role);
+    const normalized = normalizeCareerRole(role);
+    setActiveRole(normalized);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -541,40 +735,40 @@ export default function CareersPage({
             <div className="careers-metric-card">
               <span className="careers-metric-label">BASE PLANT</span>
               <div className="careers-metric-code">
-                {activeRole.basePlant.code}
+                {activeRole.basePlant?.code || "DXB-04"}
               </div>
               <span className="careers-metric-sub">
-                {activeRole.basePlant.subtext}
+                {activeRole.basePlant?.subtext || "Jebel Ali South"}
               </span>
             </div>
 
             <div className="careers-metric-card">
               <span className="careers-metric-label">ACCREDITATION</span>
               <div className="careers-metric-code">
-                {activeRole.accreditation.code}
+                {activeRole.accreditation?.code || "ISO 17025"}
               </div>
               <span className="careers-metric-sub">
-                {activeRole.accreditation.subtext}
+                {activeRole.accreditation?.subtext || "Calibrated Testing"}
               </span>
             </div>
 
             <div className="careers-metric-card">
               <span className="careers-metric-label">TEAM SIZE</span>
               <div className="careers-metric-code">
-                {activeRole.teamSize.code}
+                {activeRole.teamSize?.code || "18 Eng."}
               </div>
               <span className="careers-metric-sub">
-                {activeRole.teamSize.subtext}
+                {activeRole.teamSize?.subtext || "Materials Div"}
               </span>
             </div>
 
             <div className="careers-metric-card">
               <span className="careers-metric-label">VISA SPONSORSHIP</span>
               <div className="careers-metric-code">
-                {activeRole.visaSponsorship.code}
+                {activeRole.visaSponsorship?.code || "Full UAE"}
               </div>
               <span className="careers-metric-sub">
-                {activeRole.visaSponsorship.subtext}
+                {activeRole.visaSponsorship?.subtext || "Direct Corporate"}
               </span>
             </div>
           </div>
@@ -590,14 +784,14 @@ export default function CareersPage({
                 </h2>
 
                 <div className="careers-white-card">
-                  {activeRole.mission.paragraphs.map((para, idx) => (
+                  {(activeRole.mission?.paragraphs || []).map((para, idx) => (
                     <p key={idx} className="careers-body-p">
                       {para}
                     </p>
                   ))}
 
                   <div className="careers-highlights-grid">
-                    {activeRole.mission.highlights.map((h, idx) => (
+                    {(activeRole.mission?.highlights || []).map((h, idx) => (
                       <div key={idx} className="careers-highlight-box">
                         <div className="careers-highlight-icon-wrap">
                           {h.icon === 'shield-check' ? (
@@ -634,7 +828,7 @@ export default function CareersPage({
 
                 <div className="careers-white-card">
                   <ol className="careers-responsibilities-list">
-                    {activeRole.responsibilities.map((resp, idx) => (
+                    {(activeRole.responsibilities || []).map((resp, idx) => (
                       <li key={idx} className="careers-resp-item">
                         <span className="careers-resp-index">
                           {String(idx + 1).padStart(2, '0')}/
@@ -659,7 +853,7 @@ export default function CareersPage({
                   </div>
 
                   <ul className="careers-criteria-list">
-                    {activeRole.qualifications.mandatory.map((c, idx) => (
+                    {(activeRole.qualifications?.mandatory || []).map((c, idx) => (
                       <li key={idx} className="careers-criteria-item">
                         <strong>{c.label}:</strong> {c.text}
                       </li>
@@ -671,7 +865,7 @@ export default function CareersPage({
                       PREFERRED / HIGH VALUE CREDENTIALS
                     </span>
                     <div className="careers-preferred-tags">
-                      {activeRole.qualifications.preferred.map((p, idx) => (
+                      {(activeRole.qualifications?.preferred || []).map((p, idx) => (
                         <span key={idx} className="careers-preferred-tag">
                           {p}
                         </span>
@@ -746,7 +940,7 @@ export default function CareersPage({
                 </h2>
 
                 <div className="careers-benefits-grid">
-                  {activeRole.benefits.map((b, idx) => (
+                  {(activeRole.benefits || []).map((b, idx) => (
                     <div key={idx} className="careers-benefit-item-card">
                       <div className="careers-benefit-icon-box">
                         {b.icon === 'wallet' && <Wallet size={20} />}
@@ -840,12 +1034,11 @@ export default function CareersPage({
                   className="careers-btn-apply-sidebar"
                   onClick={() => handleOpenRoleModal(activeRole)}
                 >
-                  ⚡ APPLY NOW FOR {activeRole.reqCode.split('-')[0]}-
-                  {activeRole.reqCode.split('-')[1]}
+                  ⚡ APPLY NOW FOR {activeRole.reqCode || 'POSITION'}
                 </button>
 
                 <div className="careers-review-cycle">
-                  REVIEW CYCLE: {activeRole.sidebar.reviewCycle}
+                  REVIEW CYCLE: {activeRole.sidebar?.reviewCycle || 'TYPICALLY 3-5 BUSINESS DAYS'}
                 </div>
               </div>
 
@@ -858,7 +1051,7 @@ export default function CareersPage({
                     {activeRole.sidebar?.recruiter?.avatarUrl ? (
                       <img
                         src={getOptimizedImageUrl(activeRole.sidebar.recruiter.avatarUrl, 'avatar')}
-                        alt={activeRole.sidebar.recruiter.name}
+                        alt={activeRole.sidebar?.recruiter?.name || 'Elena Rostova'}
                         style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                       />
                     ) : (
@@ -867,22 +1060,22 @@ export default function CareersPage({
                   </div>
                   <div className="careers-recruiter-meta">
                     <h4 className="careers-recruiter-name">
-                      {activeRole.sidebar.recruiter.name}
+                      {activeRole.sidebar?.recruiter?.name || 'Elena Rostova'}
                     </h4>
                     <span className="careers-recruiter-role">
-                      {activeRole.sidebar.recruiter.role}
+                      {activeRole.sidebar?.recruiter?.role || 'LEAD TECH RECRUITER'}
                     </span>
                     <a
-                      href={`mailto:${activeRole.sidebar.recruiter.email}`}
+                      href={`mailto:${activeRole.sidebar?.recruiter?.email || 'careers@sprimax.com'}`}
                       className="careers-recruiter-email"
                     >
-                      {activeRole.sidebar.recruiter.email}
+                      {activeRole.sidebar?.recruiter?.email || 'careers@sprimax.com'}
                     </a>
                   </div>
                 </div>
 
                 <p className="careers-recruiter-quote">
-                  "{activeRole.sidebar.recruiter.quote}"
+                  "{activeRole.sidebar?.recruiter?.quote || 'Connect with our talent team.'}"
                 </p>
 
                 <button
@@ -893,7 +1086,7 @@ export default function CareersPage({
                   }}
                 >
                   <Mail size={14} /> INQUIRE WITH{' '}
-                  {activeRole.sidebar.recruiter.name.split(' ')[0].toUpperCase()}
+                  {(activeRole.sidebar?.recruiter?.name || 'Recruiter').split(' ')[0].toUpperCase()}
                 </button>
               </div>
 
